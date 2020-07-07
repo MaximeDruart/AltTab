@@ -5,9 +5,11 @@ const app = express()
 const path = require("path")
 const PORT = process.env.PORT || 3001
 
+// middlewares
 app.use(cors())
 app.use(express.json())
 
+// mongodb connection
 const mongoURI = require("./config/keys").mongoURI
 mongoose
   .connect(mongoURI, {
@@ -19,6 +21,7 @@ mongoose
   .then(() => console.log("Connection to mongoDB successful !"))
   .catch((err) => console.log(err))
 
+// routes
 const usersRouter = require("./routes/users")
 app.use("/users", usersRouter)
 

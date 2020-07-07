@@ -9,6 +9,8 @@ export const styles = {
   txtColor1: "#E2E2E2",
   txtColor2: "#BEBEBE",
   txtColorDisabled: "#858585",
+  blue: "#7D63FF",
+  darkBlue: "#463988",
   black: {
     light: "#272732",
     medium: "#1B1B26",
