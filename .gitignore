@@ -11,8 +11,11 @@
 /build
 /client/build
 
-keys.js
-/config
+#not committing keys
+config/
+config/*
+/config/
+/config/*
 
 # misc
 .DS_Store
