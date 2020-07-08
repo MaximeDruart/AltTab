@@ -2,11 +2,12 @@ import React from "react"
 import styled from "styled-components"
 import { NavLink } from "react-router-dom"
 import { styles } from "../assets/defaultStyles"
+import { setLeftPanel } from "../redux/actions/interfaceActions"
+import { useDispatch } from "react-redux"
 
 const NavContainer = styled.div`
   width: 150px;
   height: 91vh;
-  border: 1px solid yellow;
   flex: none;
   display: flex;
   flex-flow: column nowrap;
@@ -36,13 +37,13 @@ const NavContainer = styled.div`
       height: 25px;
       background: red;
       list-style-type: none;
-      &:after {
-      }
+      cursor: pointer;
     }
   }
 `
 
 const Nav = () => {
+  const dispatch = useDispatch()
   return (
     <NavContainer>
       <ul className="upper-nav">
@@ -63,15 +64,11 @@ const Nav = () => {
         </li>
       </ul>
       <div className="lower-nav">
-        <li className="lower-nav-item">
-          <div>
-            <img src="" alt="" />
-          </div>
+        <li onClick={() => dispatch(setLeftPanel("PROFILE"))} className="lower-nav-item">
+          <img src="" alt="" />
         </li>
-        <li className="lower-nav-item">
-          <div>
-            <img src="" alt="" />
-          </div>
+        <li onClick={() => dispatch(setLeftPanel("LOBBY"))} className="lower-nav-item">
+          <img src="" alt="" />
         </li>
       </div>
     </NavContainer>

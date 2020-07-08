@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 
 export const styles = {
   txtSize: {
@@ -16,6 +16,12 @@ export const styles = {
     medium: "#1B1B26",
     dark: "#0F0F12",
   },
+  red: "#C32A2A",
+  flexCentered: css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `,
 }
 
 export const Button = styled.button`
