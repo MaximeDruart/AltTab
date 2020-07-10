@@ -2,9 +2,10 @@ import styled, { css } from "styled-components"
 
 export const styles = {
   txtSize: {
-    small: "//",
-    medium: "//",
-    large: "//",
+    small: "16px",
+    medium: "20px",
+    large: "34px",
+    XLarge: "40px",
   },
   txtColor1: "#E2E2E2",
   txtColor2: "#BEBEBE",
@@ -25,23 +26,22 @@ export const styles = {
 }
 
 export const Button = styled.button`
+  border: none;
+  border-radius: 10px;
   display: inline-block;
-  border: 1px solid white;
-  text-transform: uppercase;
   padding: 1.2rem 2.4rem;
   margin: 0;
   text-decoration: none;
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 28px;
   cursor: pointer;
   text-align: center;
-  transition: border 250ms ease-in-out;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background: transparent;
+  background: #7d63ff;
 
   &:hover,
   &:focus {
-    border: 2px solid white;
+    /* border: 2px solid white; */
   }
 `

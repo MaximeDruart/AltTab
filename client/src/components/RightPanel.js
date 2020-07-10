@@ -6,10 +6,12 @@ import GameSelector from "./right/GameSelector"
 
 const RightPanelContainer = styled.div`
   width: 100%;
-  height: 100%;
-  border: 1px solid red;
+  height: auto;
   flex: auto;
-  align-self: flex-end;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  flex-flow: column nowrap;
 `
 
 const RightPanel = () => {

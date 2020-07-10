@@ -1,10 +1,12 @@
 import React from "react"
 import styled from "styled-components"
 import { styles } from "../assets/defaultStyles"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch, shallowEqual } from "react-redux"
 import settingsSvg from "../assets/icons/settings.svg"
+import profileSvg from "../assets/icons/profile.svg"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
+import { setLeftPanelMode } from "../redux/actions/interfaceActions"
 
 const mockupData = {
   lobbyName: "Maxime's game",
@@ -140,7 +142,7 @@ const LobbyContainer = styled.div`
         p {
           /* fuck it */
           font-family: NexaBold;
-          font-size: 20px;
+          font-size: ${styles.txtSize.medium};
           position: relative;
           top: 3px;
           padding-left: 12px;
@@ -168,10 +170,10 @@ const LobbyContainer = styled.div`
       justify-content: space-between;
       align-items: center;
       margin: 20px 0;
-      font-size: 20px;
+      font-size: ${styles.txtSize.medium};
       padding: 0 20px;
       .leave {
-        font-size: 14px;
+        font-size: ${styles.txtSize.small};
         padding: 8px 16px;
         background-color: ${styles.red};
         border: none;
@@ -179,7 +181,7 @@ const LobbyContainer = styled.div`
         cursor: pointer;
       }
       .players-number {
-        font-size: 16px;
+        font-size: ${styles.txtSize.medium};
         padding: 9px 18px;
         background-color: ${styles.black.light};
         border-radius: 7px;
@@ -201,6 +203,7 @@ const LobbyContainer = styled.div`
         .message {
           margin-bottom: 10px;
           margin-top: 4px;
+          font-size: ${styles.txtSize.small};
           .infos {
             margin-bottom: 1px;
             .date {
@@ -261,13 +264,14 @@ const PlayerContainer = styled.div`
       position: relative;
       top: 3px;
       font-family: NexaBold;
-      font-size: 20px;
+      font-size: ${styles.txtSize.medium};
     }
   }
 `
 
 const LobbyPanel = () => {
-  const lobby = useSelector((state) => state.interface.lobby)
+  const { lobby, leftPanelMode } = useSelector((state) => state.interface, shallowEqual)
+  const dispatch = useDispatch()
 
   const getPlayers = () =>
     mockupData.players.map((player, index) => (
@@ -291,6 +295,11 @@ const LobbyPanel = () => {
       </div>
     ))
 
+  const toggleLeftPanelMode = () => {
+    if (leftPanelMode === "USERS") return dispatch(setLeftPanelMode("SETTINGS"))
+    if (leftPanelMode === "SETTINGS") return dispatch(setLeftPanelMode("USERS"))
+  }
+
   return (
     <LobbyContainer>
       {lobby || true ? (
@@ -299,8 +308,8 @@ const LobbyPanel = () => {
             <div className="lobby-name">
               <p>{mockupData.lobbyName}</p>
             </div>
-            <div className="settings">
-              <img src={settingsSvg} alt="" />
+            <div onClick={toggleLeftPanelMode} className="settings">
+              <img src={leftPanelMode === "SETTINGS" ? settingsSvg : profileSvg} alt="" />
             </div>
           </div>
           <div className="lobby-players">
@@ -308,8 +317,7 @@ const LobbyPanel = () => {
               options={{
                 wheelSpeed: 0.15,
                 suppressScrollX: true,
-              }}
-            >
+              }}>
               {getPlayers()}
             </PerfectScrollbar>
           </div>
@@ -325,8 +333,7 @@ const LobbyPanel = () => {
                 options={{
                   wheelSpeed: 0.25,
                   suppressScrollX: true,
-                }}
-              >
+                }}>
                 {getMessages()}
               </PerfectScrollbar>
             </div>

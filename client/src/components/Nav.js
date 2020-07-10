@@ -3,7 +3,9 @@ import styled from "styled-components"
 import { NavLink } from "react-router-dom"
 import { styles } from "../assets/defaultStyles"
 import { setLeftPanel } from "../redux/actions/interfaceActions"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import profileSvg from "../assets/icons/profile.svg"
+import lobbySvg from "../assets/icons/lobby.svg"
 
 const NavContainer = styled.div`
   width: 150px;
@@ -33,17 +35,31 @@ const NavContainer = styled.div`
     justify-content: space-between;
     padding: 20px 0;
     .lower-nav-item {
+      ${styles.flexCentered};
       width: 25px;
       height: 25px;
-      background: red;
       list-style-type: none;
       cursor: pointer;
+      &.active {
+        position: relative;
+        &:after {
+          content: "";
+          position: absolute;
+          width: 3px;
+          height: 30px;
+          top: 50%;
+          left: 52px;
+          transform: translate(-50%, -50%);
+          background: ${styles.blue};
+        }
+      }
     }
   }
 `
 
 const Nav = () => {
   const dispatch = useDispatch()
+  const activeLeftPanel = useSelector((state) => state.interface.activeLeftPanel)
   return (
     <NavContainer>
       <ul className="upper-nav">
@@ -64,11 +80,15 @@ const Nav = () => {
         </li>
       </ul>
       <div className="lower-nav">
-        <li onClick={() => dispatch(setLeftPanel("PROFILE"))} className="lower-nav-item">
-          <img src="" alt="" />
+        <li
+          onClick={() => dispatch(setLeftPanel("PROFILE"))}
+          className={"lower-nav-item ".concat(activeLeftPanel === "PROFILE" ? "active" : "test")}>
+          <img src={profileSvg} alt="" />
         </li>
-        <li onClick={() => dispatch(setLeftPanel("LOBBY"))} className="lower-nav-item">
-          <img src="" alt="" />
+        <li
+          onClick={() => dispatch(setLeftPanel("LOBBY"))}
+          className={"lower-nav-item ".concat(activeLeftPanel === "LOBBY" ? "active" : "test")}>
+          <img src={lobbySvg} alt="" />
         </li>
       </div>
     </NavContainer>
