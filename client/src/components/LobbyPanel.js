@@ -1,49 +1,12 @@
 import React from "react"
 import styled from "styled-components"
-import { styles } from "../assets/defaultStyles"
+import { styles, Selector } from "../assets/defaultStyles"
 import { useSelector, useDispatch, shallowEqual } from "react-redux"
 import settingsSvg from "../assets/icons/settings.svg"
 import profileSvg from "../assets/icons/profile.svg"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
-import { setLeftPanelMode } from "../redux/actions/interfaceActions"
-
-const mockupData = {
-  lobbyName: "Maxime's game",
-  settings: {
-    private: true,
-    maxPlayers: 6,
-    rounds: 3,
-    link: "XyZa",
-  },
-  nbOfPlayers: 8,
-  players: [
-    {
-      name: "Maxime",
-      role: "owner",
-    },
-    {
-      name: "Visiteur 2624",
-      role: "user",
-    },
-    {
-      name: "test 3",
-      role: "user",
-    },
-    {
-      name: "test 4",
-      role: "user",
-    },
-    {
-      name: "test 4",
-      role: "user",
-    },
-    {
-      name: "test 4",
-      role: "user",
-    },
-  ],
-}
+import { setLeftPanelMode, updateSettings } from "../redux/actions/interfaceActions"
 
 const mockupMessages = [
   {
@@ -164,6 +127,51 @@ const LobbyContainer = styled.div`
       height: 37%;
       width: 100%;
     }
+
+    .settings {
+      margin-top: 12px;
+      height: 37%;
+      width: 100%;
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      justify-content: space-around;
+
+      .label {
+        font-size: ${styles.txtSize.medium};
+        margin-bottom: 6px;
+      }
+      .privacy {
+      }
+      .max-users,
+      .rounds {
+      }
+
+      .link {
+        .link-input {
+          color: ${styles.txtColorDisabled};
+          background-color: ${styles.black.light};
+          border-radius: 12px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: ${styles.txtSize.medium};
+          padding: 0 10px;
+
+          input {
+            font-size: ${styles.txtSize.medium};
+            border-radius: 12px;
+            outline: none;
+            border: none;
+            text-transform: uppercase;
+            color: ${styles.txtColor2};
+            background-color: ${styles.black.light};
+            width: 150px;
+          }
+        }
+      }
+    }
     .options {
       display: flex;
       flex-flow: row nowrap;
@@ -270,11 +278,11 @@ const PlayerContainer = styled.div`
 `
 
 const LobbyPanel = () => {
-  const { lobby, leftPanelMode } = useSelector((state) => state.interface, shallowEqual)
+  const { lobby, leftPanelMode } = useSelector((state) => state.interface)
   const dispatch = useDispatch()
 
   const getPlayers = () =>
-    mockupData.players.map((player, index) => (
+    lobby.players.map((player, index) => (
       <PlayerContainer index={index} key={index}>
         {player.role === "owner" && <div className="crown"></div>}
         <div className="picture"></div>
@@ -300,31 +308,76 @@ const LobbyPanel = () => {
     if (leftPanelMode === "SETTINGS") return dispatch(setLeftPanelMode("USERS"))
   }
 
+  // const updateSettings = () => {
+  //   dispatch(updateSettings)
+  //   dispatch(updateSettings({ private: true }))
+  // }
+
   return (
     <LobbyContainer>
       {lobby || true ? (
         <div className="lobby">
           <div className="lobby-header">
             <div className="lobby-name">
-              <p>{mockupData.lobbyName}</p>
+              <p>{lobby.lobbyName}</p>
             </div>
             <div onClick={toggleLeftPanelMode} className="settings">
-              <img src={leftPanelMode === "SETTINGS" ? settingsSvg : profileSvg} alt="" />
+              <img src={leftPanelMode === "USERS" ? settingsSvg : profileSvg} alt="" />
             </div>
           </div>
-          <div className="lobby-players">
-            <PerfectScrollbar
-              options={{
-                wheelSpeed: 0.15,
-                suppressScrollX: true,
-              }}>
-              {getPlayers()}
-            </PerfectScrollbar>
-          </div>
+          {leftPanelMode === "SETTINGS" ? (
+            <div className="settings">
+              <div className="privacy">
+                <div className="label">Lobby privacy</div>
+                <Selector>
+                  <div
+                    onClick={() => lobby.settings.private && dispatch(updateSettings({ private: false }))}
+                    className={lobby.settings.private ? "left" : "left active"}
+                  >
+                    Public
+                  </div>
+                  <div
+                    onClick={() => !lobby.settings.private && dispatch(updateSettings({ private: true }))}
+                    className={lobby.settings.private ? "right active" : "right"}
+                  >
+                    Private
+                  </div>
+                </Selector>
+              </div>
+              <div className="max-users">
+                <div className="label">Max users</div>
+              </div>
+              <div className="rounds">
+                <div className="label">Rounds</div>
+              </div>
+              <div className="link">
+                <div className="label">Lobby link</div>
+                <div className="link-input">
+                  <span className="prefix">alttab.com/</span>
+                  <input
+                    value={lobby.settings.link}
+                    onChange={({ target }) => dispatch(updateSettings({ link: target.value.slice(0, 4) }))}
+                    type="text"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="lobby-players">
+              <PerfectScrollbar
+                options={{
+                  wheelSpeed: 0.15,
+                  suppressScrollX: true,
+                }}
+              >
+                {getPlayers()}
+              </PerfectScrollbar>
+            </div>
+          )}
           <div className="options">
             <button className="leave">Leave</button>
             <div className="players-number">
-              {mockupData.players.length}/{mockupData.nbOfPlayers}
+              {lobby.players.length}/{lobby.nbOfPlayers}
             </div>
           </div>
           <div className="chat">
@@ -333,7 +386,8 @@ const LobbyPanel = () => {
                 options={{
                   wheelSpeed: 0.25,
                   suppressScrollX: true,
-                }}>
+                }}
+              >
                 {getMessages()}
               </PerfectScrollbar>
             </div>

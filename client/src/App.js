@@ -3,6 +3,8 @@ import styled from "styled-components"
 import Nav from "./components/Nav"
 import LeftPanel from "./components/LeftPanel"
 import RightPanel from "./components/RightPanel"
+import { useSelector } from "react-redux"
+import AuthPopup from "./components/auth"
 
 const AppContainer = styled.div`
   width: 100vw;
@@ -15,11 +17,13 @@ const AppContainer = styled.div`
 `
 
 const App = () => {
+  const showAuth = useSelector((state) => state.interface.showAuth)
   return (
     <AppContainer>
       <Nav />
       <LeftPanel />
       <RightPanel />
+      {showAuth && <AuthPopup />}
     </AppContainer>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import styled from "styled-components"
-import { styles, Button, ButtonSmall } from "../../assets/defaultStyles"
+import { styles, Button, ButtonSmall, Selector } from "../../assets/defaultStyles"
 import DisposableHelp from "./DisposableHelp"
 import gamesData from "../../assets/gamesData"
 import { useMemo } from "react"
@@ -103,16 +103,8 @@ const WelcomeContainer = styled.div`
       }
     }
     .create-server .content {
-      .toggle {
-        cursor: pointer;
-
-        .private,
-        .public {
-          width: 50px;
-          height: 30px;
-          background: ${styles.black.medium};
-          border-radius: 10px;
-        }
+      .private-selector {
+        margin-right: 20px;
       }
     }
   }
@@ -149,8 +141,11 @@ const WelcomeContainer = styled.div`
 `
 
 const Welcome = () => {
-  const [isPrivate] = useState(true)
+  const [isPrivate, setIsPrivate] = useState(true)
   const [roomCode, setRoomCode] = useState("")
+  const [newLobby, setNewLobby] = useState({
+    private: true,
+  })
 
   const inputHandler = ({ target }) => {
     setRoomCode(target.value.toUpperCase())
@@ -200,10 +195,20 @@ const Welcome = () => {
         <div className="create-server server-block">
           <div className="label">Create server</div>
           <div className="content">
-            <div className="toggle">
-              <div className="public">public</div>
-              <div className="private">private</div>
-            </div>
+            <Selector className="private-selector">
+              <div
+                onClick={() => newLobby.private && setNewLobby({ private: false })}
+                className={newLobby.private ? "left" : "left active"}
+              >
+                Public
+              </div>
+              <div
+                onClick={() => !newLobby.private && setNewLobby({ private: true })}
+                className={newLobby.private ? "right active" : "right"}
+              >
+                Private
+              </div>
+            </Selector>
             <Button>Create</Button>
           </div>
         </div>
