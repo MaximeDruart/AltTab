@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import styled from "styled-components"
 import { styles, Button, ButtonSmall } from "../../assets/defaultStyles"
 import DisposableHelp from "./DisposableHelp"
@@ -149,7 +149,7 @@ const WelcomeContainer = styled.div`
 `
 
 const Welcome = () => {
-  const [isPrivate, setIsPrivate] = useState(true)
+  const [isPrivate] = useState(true)
   const [roomCode, setRoomCode] = useState("")
 
   const inputHandler = ({ target }) => {
