@@ -144,6 +144,12 @@ table {
 
 * {
   box-sizing: border-box;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
 }
 
 html,

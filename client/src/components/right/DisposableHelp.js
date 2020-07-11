@@ -10,6 +10,8 @@ const DisposableContainer = styled.div`
   position: relative;
   border-radius: 14px;
 
+  margin-bottom: 35px;
+
   .content {
     position: absolute;
     left: 50px;
@@ -47,7 +49,7 @@ const DisposableContainer = styled.div`
   }
 `
 
-const DisposableHelp = ({ children, name }) => {
+const DisposableHelp = ({ children }) => {
   const [isWelcomeShown, setIsWelcomeShown] = useState(true)
 
   useEffect(() => {

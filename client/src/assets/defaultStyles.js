@@ -33,7 +33,28 @@ export const Button = styled.button`
   margin: 0;
   text-decoration: none;
   color: #ffffff;
-  font-size: 28px;
+  font-size: 28px !important;
+  cursor: pointer;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #7d63ff;
+
+  &:hover,
+  &:focus {
+    /* border: 2px solid white; */
+  }
+`
+
+export const ButtonSmall = styled.button`
+  border: none;
+  border-radius: 10px;
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  margin: 0;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px !important;
   cursor: pointer;
   text-align: center;
   -webkit-appearance: none;

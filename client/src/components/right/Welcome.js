@@ -1,9 +1,36 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
-import { styles, Button } from "../../assets/defaultStyles"
+import { styles, Button, ButtonSmall } from "../../assets/defaultStyles"
 import DisposableHelp from "./DisposableHelp"
 import gamesData from "../../assets/gamesData"
 import { useMemo } from "react"
+
+const mockupServers = [
+  {
+    name: "trash server",
+    players: 4,
+    maxPlayers: 6,
+    playing: "Ballzy",
+  },
+  {
+    name: "trash server",
+    players: 4,
+    maxPlayers: 6,
+    playing: "Ballzy",
+  },
+  {
+    name: "trash server",
+    players: 4,
+    maxPlayers: 6,
+    playing: "Ballzy",
+  },
+  {
+    name: "trash server",
+    players: 4,
+    maxPlayers: 6,
+    playing: "Ballzy",
+  },
+]
 
 const WelcomeContainer = styled.div`
   width: 94%;
@@ -14,14 +41,15 @@ const WelcomeContainer = styled.div`
     font-family: NexaBold;
   }
 
+  .label {
+    color: ${styles.txtColor1};
+    font-size: ${styles.txtSize.medium};
+    margin-bottom: 7px;
+  }
+
   .games-container {
     width: 100%;
-    margin-top: 35px;
-    .label {
-      color: ${styles.txtColor1};
-      font-size: ${styles.txtSize.medium};
-      margin-bottom: 7px;
-    }
+
     .games {
       width: 100%;
       display: flex;
@@ -43,7 +71,7 @@ const WelcomeContainer = styled.div`
       }
     }
   }
-  .servers {
+  .servers-link {
     margin-top: 35px;
     width: 100%;
     display: flex;
@@ -51,10 +79,6 @@ const WelcomeContainer = styled.div`
     justify-content: space-between;
 
     .server-block {
-      .label {
-        font-size: ${styles.txtSize.medium};
-        margin-bottom: 7px;
-      }
       .content {
         padding: 0 35px;
         display: flex;
@@ -92,11 +116,46 @@ const WelcomeContainer = styled.div`
       }
     }
   }
+  .server-browser {
+    margin-top: 35px;
+    width: 100%;
+    /* margin at the bottom so you can scroll a bit more */
+    margin-bottom: 3vh;
+
+    .servers {
+      width: 100%;
+      border-radius: 14px;
+
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      background-color: ${styles.black.medium};
+      padding: 20px;
+      .server {
+        border-radius: 12px;
+        margin-bottom: 15px;
+        padding: 0 20px;
+        width: 100%;
+        height: 80px;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        background-color: ${styles.black.light};
+        justify-content: space-between;
+        font-size: ${styles.txtSize.medium};
+      }
+    }
+  }
 `
 
 const Welcome = () => {
   const [isPrivate, setIsPrivate] = useState(true)
   const [roomCode, setRoomCode] = useState("")
+
+  const inputHandler = ({ target }) => {
+    setRoomCode(target.value.toUpperCase())
+  }
+
   const mappedGames = useMemo(
     () =>
       gamesData.map((game, index) => (
@@ -106,9 +165,20 @@ const Welcome = () => {
       )),
     []
   )
-  const inputHandler = ({ target }) => {
-    setRoomCode(target.value.toUpperCase())
-  }
+  const mappedServers = useMemo(
+    () =>
+      mockupServers.map((server, index) => (
+        <div key={index} className="server">
+          <div className="name">{server.name}</div>
+          <div className="game">{server.playing}</div>
+          <div className="players">
+            {server.players}/{server.maxPlayers}
+          </div>
+          <ButtonSmall>Join</ButtonSmall>
+        </div>
+      )),
+    []
+  )
 
   return (
     <WelcomeContainer isPrivate={isPrivate}>
@@ -126,7 +196,7 @@ const Welcome = () => {
         <div className="label">Quick matchmaking</div>
         <div className="games">{mappedGames}</div>
       </div>
-      <div className="servers">
+      <div className="servers-link">
         <div className="create-server server-block">
           <div className="label">Create server</div>
           <div className="content">
@@ -144,6 +214,10 @@ const Welcome = () => {
             <Button>Join</Button>
           </div>
         </div>
+      </div>
+      <div className="server-browser">
+        <div className="label">Browse servers</div>
+        <div className="servers">{mappedServers}</div>
       </div>
     </WelcomeContainer>
   )

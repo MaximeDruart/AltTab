@@ -6,7 +6,8 @@ import GameSelector from "./right/GameSelector"
 
 const RightPanelContainer = styled.div`
   width: 100%;
-  height: auto;
+  height: 100vh;
+  overflow-y: scroll;
   flex: auto;
   align-self: flex-start;
   display: flex;
