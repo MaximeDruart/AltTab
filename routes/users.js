@@ -33,6 +33,15 @@ router.get("/find/all/private", auth, (req, res) => {
     .catch((err) => res.status(404).json(err))
 })
 
+// @route POST users/edit/username
+// @desc edits username
+// @access Private
+router.post("/edit/username", auth, (req, res) => {
+  User.findByIdAndUpdate(req.user.id, { username: req.body.username })
+    .then((user) => res.json(user))
+    .catch((error) => res.status(404).json(err))
+})
+
 // @route POST users/register
 // @desc authenticate user
 // @access Public
@@ -124,7 +133,6 @@ router.post("/login", (req, res) => {
 // @desc get user data. It is private so a token is needed. The middleware function auth will decode the token and send along the decoded data (containing the user id). then this route will get all the data for the user with this id.
 // @access Private
 router.get("/info", auth, (req, res) => {
-  console.log(req)
   User.findById(req.user.id)
     .select("-password")
     .then((user) => res.json(user))

@@ -38,7 +38,7 @@ const initialState = {
       },
     ],
   },
-  leftPanelMode: "SETTINGS", // switch between "USERS" and "SETTINGS"
+  leftPanelMode: "USERS", // switch between "USERS" and "SETTINGS"
   showAuth: false,
   authMode: "REGISTER", // switches between "REGISTER" and "LOGIN"
 }

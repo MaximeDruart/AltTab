@@ -8,16 +8,15 @@ const auth = (req, res, next) => {
   const token = req.header("x-auth-token")
 
   // if there's no token send 401 : user is unauthorized
-  if (!token) return res.status(401).json({ message: "No token, authorization denied" })
+  if (!token) return res.status(401).json({ msg: "No token, authorization denied" })
 
   // verify token
-
   try {
     const decodedData = jwt.verify(token, config.get("jwtSecret"))
     req.user = decodedData
     next()
   } catch (e) {
-    res.status(400).json({ message: "token is invalid" })
+    res.status(400).json({ msg: "token is invalid" })
   }
 }
 

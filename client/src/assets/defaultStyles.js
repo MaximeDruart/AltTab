@@ -13,6 +13,7 @@ export const styles = {
   txtColor2: "#BEBEBE",
   txtColorDisabled: "#858585",
   blue: "#7D63FF",
+  disabledBlue: "#8881ab",
   darkBlue: "#463988",
   black: {
     light: "#272732",
@@ -82,7 +83,8 @@ export const LargeButton = styled.button`
   text-align: center;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-color: ${(props) => (props.variant === "dark" ? "#463988" : "#7d63ff")};
+  background-color: ${(props) =>
+    props.variant === "dark" ? "#463988" : props.variant === "disabled" ? "#8881ab" : "#7d63ff"};
   width: 100%;
 
   &:hover,

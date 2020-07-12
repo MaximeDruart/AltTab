@@ -48,11 +48,22 @@ const AuthContainer = styled.div`
       .form-group {
         margin: 31px 0;
         width: 100%;
-        label {
-          display: block;
+
+        .label-group {
           margin-bottom: 7px;
-          font-size: ${styles.txtSize.medium};
+          display: flex;
+          flex-flow: row nowrap;
+          align-items: center;
+          label {
+            font-size: ${styles.txtSize.medium};
+          }
+          .error-message {
+            padding-left: 10px;
+            font-size: ${styles.txtSize.small};
+            color: ${styles.red};
+          }
         }
+
         input {
           outline: none;
           border: 1px solid rgba(125, 99, 255, 0.6);
@@ -64,7 +75,7 @@ const AuthContainer = styled.div`
           padding-left: 15px;
 
           &:focus {
-            border: 2px solid ${styles.blue};
+            border: 2px solid ${styles.blue} !important;
           }
         }
       }

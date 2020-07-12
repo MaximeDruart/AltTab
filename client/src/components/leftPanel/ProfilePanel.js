@@ -1,14 +1,10 @@
 import React from "react"
 import styled from "styled-components"
 import { styles, Button, ButtonSmall } from "../../assets/defaultStyles"
-import { useDispatch } from "react-redux"
+import logoutSvg from "../../assets/icons/logout.svg"
+import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth, setAuthMode } from "../../redux/actions/interfaceActions"
-
-const mockupUser = {
-  username: "Zoomer",
-  email: "maxime.druart@hetic.net",
-  stats: {},
-}
+import { logoutUser } from "../../redux/actions/authActions"
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -24,6 +20,7 @@ const ProfileContainer = styled.div`
     position: absolute;
     top: 20px;
     right: 20px;
+    cursor: pointer;
   }
   .head {
     margin-top: 25px;
@@ -119,22 +116,26 @@ const ProfileContainer = styled.div`
 `
 
 const Profile = () => {
-  const isLoggedIn = false
   const dispatch = useDispatch()
+
+  const { user, isAuthenticated } = useSelector((state) => state.auth)
+
   return (
     <ProfileContainer>
-      <div className="disconnect">dc</div>
+      <div onClick={() => dispatch(logoutUser())} className="disconnect">
+        <img src={logoutSvg} alt="" />
+      </div>
       <div className="head">
         <div className="pfp">
           <div className="img"></div>
           <div className="add"></div>
         </div>
         <div className="infos">
-          <div className="name">{mockupUser.username}</div>
-          {isLoggedIn && <div className="email">{mockupUser.email}</div>}
+          <div className="name">{user?.username || "Visiteur"}</div>
+          {isAuthenticated && <div className="email">{user?.email}</div>}
         </div>
       </div>
-      {isLoggedIn ? (
+      {isAuthenticated ? (
         <>
           <div className="personal-infos section">
             <div className="header">

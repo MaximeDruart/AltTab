@@ -1,9 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
 import styled from "styled-components"
 import { LargeButton, styles } from "../../assets/defaultStyles"
-import { useDispatch } from "react-redux"
-import { setAuthMode } from "../../redux/actions/interfaceActions"
+import { useDispatch, useSelector } from "react-redux"
+import { setAuthMode, toggleAuth } from "../../redux/actions/interfaceActions"
+import { clearErrors } from "../../redux/actions/errorActions"
+import { loginUser } from "../../redux/actions/authActions"
 
 const LoginContainer = styled.div`
   width: 100%;
@@ -21,25 +23,45 @@ const LoginContainer = styled.div`
 
 const Login = () => {
   const dispatch = useDispatch()
+
   const [logs, setLogs] = useState({
     email: "",
     password: "",
   })
+
+  const errorMessages = useSelector((state) => state.error.msg)
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
+
   const handleSubmit = (event) => {
     event.preventDefault()
+    dispatch(loginUser(logs))
   }
+
+  useEffect(() => {
+    dispatch(clearErrors())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (isAuthenticated) dispatch(toggleAuth())
+  }, [dispatch, isAuthenticated])
+
   const handleChange = ({ target }) => {
     let { name, value } = target
     setLogs({ ...logs, [name]: value })
   }
+
   return (
     <LoginContainer>
       <div className="auth-title">Welcome back !</div>
       <form onSubmit={handleSubmit}>
         <div className="fields">
           <div className="form-group email">
-            <label htmlFor="email">email</label>
+            <div className="label-group">
+              <label htmlFor="email">email</label>
+              {errorMessages.email && <div className="error-message">- {errorMessages.email}</div>}
+            </div>
             <input
+              style={{ border: errorMessages.email ? "1px solid red" : `1px solid rgba(125, 99, 255, 0.6)` }}
               id="email"
               placeholder="a.b@gmail.com"
               type="text"
@@ -49,8 +71,12 @@ const Login = () => {
             />
           </div>
           <div className="form-group password">
-            <label htmlFor="password">password</label>
+            <div className="label-group">
+              <label htmlFor="password">password</label>
+              {errorMessages.password && <div className="error-message">- {errorMessages.password}</div>}
+            </div>
             <input
+              style={{ border: errorMessages.password ? "1px solid red" : `1px solid rgba(125, 99, 255, 0.6)` }}
               placeholder="paulbismuth123"
               type="password"
               name="password"
