@@ -131,7 +131,7 @@ const Profile = () => {
         </div>
         <div className="infos">
           <div className="name">{mockupUser.username}</div>
-          <div className="email">{mockupUser.email}</div>
+          {isLoggedIn && <div className="email">{mockupUser.email}</div>}
         </div>
       </div>
       {isLoggedIn ? (

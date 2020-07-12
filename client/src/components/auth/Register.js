@@ -18,6 +18,7 @@ const Login = () => {
     username: "",
     email: "",
     password: "",
+    password2: "",
   })
 
   const handleSubmit = (event) => {
@@ -44,6 +45,10 @@ const Login = () => {
           <div className="form-group password">
             <label htmlFor="password">password</label>
             <input type="password" name="password" value={logs.password} onChange={handleChange} />
+          </div>
+          <div className="form-group password">
+            <label htmlFor="password2">confirm password</label>
+            <input type="password" name="password2" value={logs.password2} onChange={handleChange} />
           </div>
         </div>
         <LargeButton>Sign up</LargeButton>
