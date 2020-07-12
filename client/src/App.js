@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
 import Nav from "./components/Nav"
-import LeftPanel from "./components/LeftPanel"
-import RightPanel from "./components/RightPanel"
+import LeftPanel from "./components/leftPanel"
+import RightPanel from "./components/rightPanel"
 import { useSelector } from "react-redux"
 import AuthPopup from "./components/auth"
 

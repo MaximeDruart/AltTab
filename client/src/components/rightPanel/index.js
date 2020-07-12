@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
 import { Switch, Route } from "react-router-dom"
-import Welcome from "./right/Welcome"
-import GameSelector from "./right/GameSelector"
+import Welcome from "./Welcome"
+import GameSelector from "./GameSelector"
 
 const RightPanelContainer = styled.div`
   width: 100%;

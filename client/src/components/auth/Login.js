@@ -37,9 +37,7 @@ const Login = () => {
           <div className="form-group password">
             <label htmlFor="password">password</label>
             <input type="password" name="password" value={logs.password} onChange={handleChange} />
-            <a className="forgot" href="">
-              forgot your password ?
-            </a>
+            <span className="forgot">forgot your password ?</span>
           </div>
         </div>
         <LargeButton>Log in</LargeButton>

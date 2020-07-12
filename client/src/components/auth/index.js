@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import styled from "styled-components"
 import Login from "./Login"
 import Register from "./Register"
 import { styles } from "../../assets/defaultStyles"
 import { useDispatch, useSelector } from "react-redux"
-import { toggleAuth, setAuthMode } from "../../redux/actions/interfaceActions"
+import { toggleAuth } from "../../redux/actions/interfaceActions"
 
 const AuthContainer = styled.div`
   position: fixed;
@@ -67,9 +67,17 @@ const AuthPopup = () => {
   const authMode = useSelector((state) => state.interface.authMode)
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    // hides popup on escape key press
+    const toggle = ({ key }) => key === "Escape" && dispatch(toggleAuth())
+    window.addEventListener("keydown", toggle)
+    return () => window.removeEventListener("keydown", toggle)
+  }, [])
+
   return (
     <>
       <AuthContainer>{authMode === "LOGIN" ? <Login /> : <Register />}</AuthContainer>
+      {/* clicking on somewhere else than the popup dismisses it */}
       <Filter onClick={() => dispatch(toggleAuth())} />
     </>
   )

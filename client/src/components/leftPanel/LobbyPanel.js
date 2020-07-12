@@ -1,12 +1,12 @@
 import React from "react"
 import styled from "styled-components"
-import { styles, Selector } from "../assets/defaultStyles"
-import { useSelector, useDispatch, shallowEqual } from "react-redux"
-import settingsSvg from "../assets/icons/settings.svg"
-import profileSvg from "../assets/icons/profile.svg"
+import { styles, Selector } from "../../assets/defaultStyles"
+import { useSelector, useDispatch } from "react-redux"
+import settingsSvg from "../../assets/icons/settings.svg"
+import profileSvg from "../../assets/icons/profile.svg"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
-import { setLeftPanelMode, updateSettings } from "../redux/actions/interfaceActions"
+import { setLeftPanelMode, updateSettings } from "../../redux/actions/interfaceActions"
 
 const mockupMessages = [
   {

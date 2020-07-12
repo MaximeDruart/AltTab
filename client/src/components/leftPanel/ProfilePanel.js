@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
-import { styles, Button, ButtonSmall } from "../assets/defaultStyles"
+import { styles, Button, ButtonSmall } from "../../assets/defaultStyles"
 import { useDispatch } from "react-redux"
-import { toggleAuth, setAuthMode } from "../redux/actions/interfaceActions"
+import { toggleAuth, setAuthMode } from "../../redux/actions/interfaceActions"
 
 const mockupUser = {
   username: "Zoomer",

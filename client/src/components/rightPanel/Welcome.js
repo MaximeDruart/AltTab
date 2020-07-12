@@ -141,7 +141,8 @@ const WelcomeContainer = styled.div`
 `
 
 const Welcome = () => {
-  const [isPrivate, setIsPrivate] = useState(true)
+  // const [isPrivate, setIsPrivate] = useState(true)
+  const [isPrivate] = useState(true)
   const [roomCode, setRoomCode] = useState("")
   const [newLobby, setNewLobby] = useState({
     private: true,

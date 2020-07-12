@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { styles } from "../assets/defaultStyles"
+import { styles } from "../../assets/defaultStyles"
 import { useSelector, shallowEqual } from "react-redux"
 import LobbyPanel from "./LobbyPanel"
 import ProfilePanel from "./ProfilePanel"
