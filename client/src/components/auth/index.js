@@ -5,6 +5,7 @@ import Register from "./Register"
 import { styles } from "../../assets/defaultStyles"
 import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth } from "../../redux/actions/interfaceActions"
+import closeSvg from "../../assets/icons/close.svg"
 
 const AuthContainer = styled.div`
   position: fixed;
@@ -21,6 +22,21 @@ const AuthContainer = styled.div`
   border-radius: 12px;
   * {
     font-family: NexaBold;
+  }
+  .close {
+    position: absolute;
+    top: 2.5vh;
+    right: 2.5vh;
+    ${styles.flexCentered};
+    background-color: ${styles.blue};
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    img {
+      width: 60%;
+      height: 60%;
+    }
   }
   .auth-title {
     font-size: ${styles.txtSize.XLarge};
@@ -43,10 +59,40 @@ const AuthContainer = styled.div`
           background-color: ${styles.black.light};
           width: 100%;
           border-radius: 6px;
-          height: 40px;
+          height: 44px;
+          font-size: ${styles.txtSize.medium};
+          padding-left: 15px;
+
           &:focus {
             border: 2px solid ${styles.blue};
           }
+        }
+      }
+    }
+    .no-account {
+      margin: 11px 0;
+      span {
+        color: ${styles.txtColor2};
+      }
+      .link {
+        cursor: pointer;
+        color: ${styles.blue};
+      }
+    }
+    .other-options {
+      margin-top: 10px;
+      .login-methods {
+        margin-top: 20px;
+
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: space-around;
+        .login-method {
+          width: 70px;
+          height: 70px;
+          border-radius: 10px;
+          background-color: ${styles.blue};
         }
       }
     }
@@ -67,16 +113,21 @@ const AuthPopup = () => {
   const authMode = useSelector((state) => state.interface.authMode)
   const dispatch = useDispatch()
 
+  // hides popup on escape key press
   useEffect(() => {
-    // hides popup on escape key press
     const toggle = ({ key }) => key === "Escape" && dispatch(toggleAuth())
     window.addEventListener("keydown", toggle)
     return () => window.removeEventListener("keydown", toggle)
-  }, [])
+  }, [dispatch])
 
   return (
     <>
-      <AuthContainer>{authMode === "LOGIN" ? <Login /> : <Register />}</AuthContainer>
+      <AuthContainer>
+        <div onClick={() => dispatch(toggleAuth())} className="close">
+          <img src={closeSvg} alt="" />
+        </div>
+        {authMode === "LOGIN" ? <Login /> : <Register />}
+      </AuthContainer>
       {/* clicking on somewhere else than the popup dismisses it */}
       <Filter onClick={() => dispatch(toggleAuth())} />
     </>
