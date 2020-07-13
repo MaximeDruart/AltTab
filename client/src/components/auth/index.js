@@ -6,6 +6,10 @@ import { styles } from "../../assets/defaultStyles"
 import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth } from "../../redux/actions/interfaceActions"
 import closeSvg from "../../assets/icons/close.svg"
+import googleSvg from "../../assets/icons/google.svg"
+
+import GoogleLogin from "react-google-login"
+import { registerUser, loginUser } from "../../redux/actions/authActions"
 
 const AuthContainer = styled.div`
   position: fixed;
@@ -90,20 +94,30 @@ const AuthContainer = styled.div`
         color: ${styles.blue};
       }
     }
-    .other-options {
-      margin-top: 10px;
-      .login-methods {
-        margin-top: 20px;
+  }
+  .other-options {
+    margin-top: 10px;
+    .login-methods {
+      margin-top: 20px;
 
-        display: flex;
-        flex-flow: row nowrap;
-        align-items: center;
-        justify-content: space-around;
-        .login-method {
-          width: 70px;
-          height: 70px;
-          border-radius: 10px;
-          background-color: ${styles.blue};
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      justify-content: space-around;
+      .login-method {
+        width: 70px;
+        height: 70px;
+        border-radius: 10px;
+        background-color: ${styles.blue};
+        .oauth-logo {
+          ${styles.flexCentered};
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+          img {
+            width: 60%;
+            height: 60%;
+          }
         }
       }
     }
@@ -131,6 +145,27 @@ const AuthPopup = () => {
     return () => window.removeEventListener("keydown", toggle)
   }, [dispatch])
 
+  const googleResponse = (res) => {
+    if (res.profileObj) {
+      // need to do a function on front end that checks if a user is already in database
+      if (userExists) {
+        dispatch(
+          registerUser({
+            email: res.profileObj.email,
+            username: res.profileObj.name,
+            profileImageUrl: res.profileObj.imageUrl,
+            googleId: res.profileObj.googleId,
+          })
+        )
+      } else {
+        dispatch()
+        // need to do a special google login that doesn't require a password
+      }
+    } else {
+      dispatch({ type: "AUTH_ERROR" })
+    }
+  }
+
   return (
     <>
       <AuthContainer>
@@ -138,6 +173,27 @@ const AuthPopup = () => {
           <img src={closeSvg} alt="" />
         </div>
         {authMode === "LOGIN" ? <Login /> : <Register />}
+        <div className="other-options">
+          <div className="title">Or log in with :</div>
+          <div className="login-methods">
+            <div className="login-method">
+              <GoogleLogin
+                clientId="76394632971-msffvnn3r717d87dbsl0u650kk0mb07g.apps.googleusercontent.com"
+                onSuccess={googleResponse}
+                onFailure={googleResponse}
+                cookiePolicy={"single_host_origin"}
+                render={(renderProps) => (
+                  <div className="oauth-logo" onClick={renderProps.onClick} disabled={renderProps.disabled}>
+                    <img src={googleSvg} alt="" />
+                  </div>
+                )}
+              />
+            </div>
+            <div className="login-method"></div>
+            <div className="login-method"></div>
+            <div className="login-method"></div>
+          </div>
+        </div>
       </AuthContainer>
       {/* clicking on somewhere else than the popup dismisses it */}
       <Filter onClick={() => dispatch(toggleAuth())} />

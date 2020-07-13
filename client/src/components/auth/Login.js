@@ -94,15 +94,6 @@ const Login = () => {
             sign up.
           </span>
         </div>
-        <div className="other-options">
-          <div className="title">Or log in with :</div>
-          <div className="login-methods">
-            <div className="login-method"></div>
-            <div className="login-method"></div>
-            <div className="login-method"></div>
-            <div className="login-method"></div>
-          </div>
-        </div>
       </form>
     </LoginContainer>
   )
