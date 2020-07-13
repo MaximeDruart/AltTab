@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const bcrypt = require("bcryptjs")
-const config = require("config")
+const keys = require("../keys")
 const jwt = require("jsonwebtoken")
 const auth = require("../middleware/auth")
 
@@ -55,8 +55,8 @@ router.post("/register", (req, res) => {
     $or: [{ email: req.body.email }, { username: req.body.username }],
   }).then((user) => {
     if (user) {
-      if (user.email === req.body.email) return res.status(400).json({ error: "email already taken" })
-      if (user.username === req.body.username) return res.status(400).json({ error: "username already taken" })
+      if (user.email === req.body.email) return res.status(400).json({ email: "email already taken" })
+      if (user.username === req.body.username) return res.status(400).json({ username: "username already taken" })
     }
 
     // create new user
@@ -77,7 +77,7 @@ router.post("/register", (req, res) => {
           .save()
           .then((user) => {
             // sign a token containing user id and send it back along with the user
-            jwt.sign({ id: user.id }, config.get("jwtSecret"), { expiresIn: 3600 * 24 }, (err, token) => {
+            jwt.sign({ id: user.id }, keys.jwtSecret, { expiresIn: 3600 * 24 }, (err, token) => {
               if (err) throw err
               res.json({
                 token,
@@ -114,7 +114,7 @@ router.post("/login", (req, res) => {
       if (!isMatch) return res.status(400).json({ password: "incorrect password" })
 
       // sign a token containing user id and send it back along with the user
-      jwt.sign({ id: user.id }, config.get("jwtSecret"), { expiresIn: 3600 * 24 }, (err, token) => {
+      jwt.sign({ id: user.id }, keys.jwtSecret, { expiresIn: 3600 * 24 }, (err, token) => {
         if (err) throw err
         res.json({
           token,
