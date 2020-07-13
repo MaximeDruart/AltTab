@@ -7,6 +7,9 @@ import { returnErrors } from "./errorActions"
 export const loadUser = () => (dispatch, getState) => {
   dispatch({ type: "SET_LOADING" })
   // send the request
+
+  // shortcutting the case where there is no token as to not show a 401 error in console
+  if (!localStorage.getItem("token")) return false
   axios
     .get("/users/info", tokenConfig(getState))
     .then((res) => {
