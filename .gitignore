@@ -13,6 +13,7 @@
 
 #not committing keys
 # keys.js
+.env
 
 # misc
 .DS_Store

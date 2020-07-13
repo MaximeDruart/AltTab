@@ -4,14 +4,14 @@ const mongoose = require("mongoose")
 const app = express()
 const path = require("path")
 const PORT = process.env.PORT || 3001
-const keys = require("./keys")
+require("dotenv").config()
 
 // middlewares
 app.use(cors())
 app.use(express.json())
 
 // mongodb connection
-const mongoURI = keys.mongoURI
+const mongoURI = process.env.MONGO_URI
 mongoose
   .connect(mongoURI, {
     useCreateIndex: true,

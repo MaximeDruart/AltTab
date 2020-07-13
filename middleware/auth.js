@@ -1,4 +1,3 @@
-const keys = require("../keys")
 const jwt = require("jsonwebtoken")
 
 // middleware function that checks if a token is sent with the request and if it's valid AND returns the corresponding user
@@ -12,7 +11,7 @@ const auth = (req, res, next) => {
 
   // verify token
   try {
-    const decodedData = jwt.verify(token, keys.jwtSecret)
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decodedData
     next()
   } catch (e) {

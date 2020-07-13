@@ -1,6 +1,5 @@
 const router = require("express").Router()
 const bcrypt = require("bcryptjs")
-const keys = require("../keys")
 const jwt = require("jsonwebtoken")
 const auth = require("../middleware/auth")
 
@@ -77,7 +76,7 @@ router.post("/register", (req, res) => {
           .save()
           .then((user) => {
             // sign a token containing user id and send it back along with the user
-            jwt.sign({ id: user.id }, keys.jwtSecret, { expiresIn: 3600 * 24 }, (err, token) => {
+            jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: 3600 * 24 }, (err, token) => {
               if (err) throw err
               res.json({
                 token,
@@ -114,7 +113,7 @@ router.post("/login", (req, res) => {
       if (!isMatch) return res.status(400).json({ password: "incorrect password" })
 
       // sign a token containing user id and send it back along with the user
-      jwt.sign({ id: user.id }, keys.jwtSecret, { expiresIn: 3600 * 24 }, (err, token) => {
+      jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: 3600 * 24 }, (err, token) => {
         if (err) throw err
         res.json({
           token,
