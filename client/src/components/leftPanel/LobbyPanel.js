@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { styles, Selector } from "../../assets/defaultStyles"
 import { useSelector, useDispatch } from "react-redux"
@@ -6,55 +6,11 @@ import settingsSvg from "../../assets/icons/settings.svg"
 import profileSvg from "../../assets/icons/profile.svg"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
-import { setLeftPanelMode, updateSettings } from "../../redux/actions/interfaceActions"
+import { setLeftPanelMode } from "../../redux/actions/interfaceActions"
+import { updateRoomSettings } from "../../redux/actions/socketActions"
 
-const mockupMessages = [
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:58",
-    content: "jes suis un message feaiohgieagn fazifhazlkfaz",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-]
+import ChatPanel from "./ChatPanel"
+import { WebSocketContext } from "../../WebSocketContext"
 
 const LobbyContainer = styled.div`
   width: 100%;
@@ -195,51 +151,6 @@ const LobbyContainer = styled.div`
         border-radius: 7px;
       }
     }
-
-    .chat {
-      height: 42%;
-      width: 100%;
-      background-color: ${styles.black.light};
-      border-radius: 14px;
-      padding: 14px 18px;
-      display: flex;
-      flex-flow: column nowrap;
-      align-items: center;
-      justify-content: space-between;
-      .messages {
-        height: 90%;
-        .message {
-          margin-bottom: 10px;
-          margin-top: 4px;
-          font-size: ${styles.txtSize.small};
-          .infos {
-            margin-bottom: 1px;
-            .date {
-              color: ${styles.txtColorDisabled};
-              margin-right: 4px;
-            }
-            .author {
-            }
-          }
-          .content {
-            font-family: NexaRegular;
-          }
-        }
-      }
-      .chat-input {
-        width: 100%;
-        background-color: ${styles.black.medium};
-        border: none;
-        height: 30px;
-        border-radius: 10px;
-        padding-left: 7px;
-        margin: 0 auto;
-        &:focus {
-          border: 1px solid ${styles.blue};
-          outline: none;
-        }
-      }
-    }
   }
 `
 
@@ -278,29 +189,20 @@ const PlayerContainer = styled.div`
 `
 
 const LobbyPanel = () => {
-  const { lobby, leftPanelMode } = useSelector((state) => state.interface)
+  const ws = useContext(WebSocketContext)
+  const leftPanelMode = useSelector((state) => state.interface.leftPanelMode)
+  const { room } = useSelector((state) => state.socket)
   const dispatch = useDispatch()
 
   const getPlayers = () =>
-    lobby.players.map((player, index) => (
+    room.members.map((player, index) => (
       <PlayerContainer index={index} key={index}>
         {player.role === "owner" && <div className="crown"></div>}
         <div className="picture"></div>
         <div className="name-tag">
-          <span>{player.name}</span>
+          <span>{player}</span>
         </div>
       </PlayerContainer>
-    ))
-
-  const getMessages = () =>
-    mockupMessages.map((msg, index) => (
-      <div key={index} className="message">
-        <div className="infos">
-          <span className="date">{msg.date}</span>
-          <span className="author">{msg.author}</span>
-        </div>
-        <div className="content">{msg.content}</div>
-      </div>
     ))
 
   const toggleLeftPanelMode = () => {
@@ -308,18 +210,13 @@ const LobbyPanel = () => {
     if (leftPanelMode === "SETTINGS") return dispatch(setLeftPanelMode("USERS"))
   }
 
-  // const updateSettings = () => {
-  //   dispatch(updateSettings)
-  //   dispatch(updateSettings({ private: true }))
-  // }
-
   return (
     <LobbyContainer>
-      {lobby || true ? (
+      {room ? (
         <div className="lobby">
           <div className="lobby-header">
             <div className="lobby-name">
-              <p>{lobby.lobbyName}</p>
+              <p>{room.name}</p>
             </div>
             <div onClick={toggleLeftPanelMode} className="settings">
               <img src={leftPanelMode === "USERS" ? settingsSvg : profileSvg} alt="" />
@@ -331,14 +228,14 @@ const LobbyPanel = () => {
                 <div className="label">Lobby privacy</div>
                 <Selector>
                   <div
-                    onClick={() => lobby.settings.private && dispatch(updateSettings({ private: false }))}
-                    className={lobby.settings.private ? "left" : "left active"}
+                    onClick={() => room.private && dispatch(updateRoomSettings({ private: false }))}
+                    className={room.private ? "left" : "left active"}
                   >
                     Public
                   </div>
                   <div
-                    onClick={() => !lobby.settings.private && dispatch(updateSettings({ private: true }))}
-                    className={lobby.settings.private ? "right active" : "right"}
+                    onClick={() => !room.private && dispatch(updateRoomSettings({ private: true }))}
+                    className={room.private ? "right active" : "right"}
                   >
                     Private
                   </div>
@@ -355,8 +252,8 @@ const LobbyPanel = () => {
                 <div className="link-input">
                   <span className="prefix">alttab.com/</span>
                   <input
-                    value={lobby.settings.link}
-                    onChange={({ target }) => dispatch(updateSettings({ link: target.value.slice(0, 4) }))}
+                    value={room.code}
+                    onChange={({ target }) => dispatch(updateRoomSettings({ code: target.value.slice(0, 4) }))}
                     type="text"
                   />
                 </div>
@@ -375,24 +272,14 @@ const LobbyPanel = () => {
             </div>
           )}
           <div className="options">
-            <button className="leave">Leave</button>
+            <button onClick={() => ws.leaveRoom(room.code)} className="leave">
+              Leave
+            </button>
             <div className="players-number">
-              {lobby.players.length}/{lobby.nbOfPlayers}
+              {room.members.length}/{room.maxMembers}
             </div>
           </div>
-          <div className="chat">
-            <div className="messages">
-              <PerfectScrollbar
-                options={{
-                  wheelSpeed: 0.25,
-                  suppressScrollX: true,
-                }}
-              >
-                {getMessages()}
-              </PerfectScrollbar>
-            </div>
-            <input className="chat-input" type="text" />
-          </div>
+          <ChatPanel />
         </div>
       ) : (
         <div className="no-lobby">

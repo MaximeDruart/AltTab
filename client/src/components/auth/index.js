@@ -114,7 +114,7 @@ const Filter = styled.div`
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vw;
+  height: 100vh;
   background: black;
   opacity: 0.75;
   z-index: 1000;

@@ -21,6 +21,12 @@ export const styles = {
     dark: "#0F0F12",
   },
   red: "#C32A2A",
+  boxShadowHard: css`
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.29);
+  `,
+  boxShadowSoft: css`
+    box-shadow: 0px 4px 11px rgba(0, 0, 0, 0.12);
+  `,
   flexCentered: css`
     display: flex;
     justify-content: center;
@@ -29,8 +35,9 @@ export const styles = {
 }
 
 export const Button = styled.button`
+  ${styles.boxShadowSoft};
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   display: block;
   padding: 1.2rem 2.4rem;
   margin: 0;
@@ -41,7 +48,9 @@ export const Button = styled.button`
   text-align: center;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background: #7d63ff;
+  background: ${(props) => (props.variant === "disabled" ? "#8881ab" : "#7d63ff")};
+  pointer-events: ${(props) => (props.variant === "disabled" ? "none" : "auto")};
+  transition: background 0.3s ease-in-out;
 
   &:hover,
   &:focus {
@@ -50,6 +59,7 @@ export const Button = styled.button`
 `
 
 export const ButtonSmall = styled.button`
+  ${styles.boxShadowSoft};
   border: none;
   border-radius: 10px;
   display: block;
@@ -71,6 +81,7 @@ export const ButtonSmall = styled.button`
 `
 
 export const LargeButton = styled.button`
+  ${styles.boxShadowSoft};
   border: none;
   border-radius: 10px;
   display: block;

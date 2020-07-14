@@ -9,26 +9,29 @@ module.exports = function validateRegisterInput(data) {
   data.password2 = !isEmpty(data.password2) ? data.password2 : ""
   // Name checks
   if (Validator.isEmpty(data.username)) {
-    errors.username = "nom d'utilisateur requis"
+    errors.username = "Username required"
   }
   // Email checks
   if (Validator.isEmpty(data.email)) {
-    errors.email = "mail requis"
+    errors.email = "Email required"
   } else if (!Validator.isEmail(data.email)) {
-    errors.email = "mail invalide"
+    errors.email = "Invalid email"
   }
   // Password checks
-  if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
-    errors.password = "le mot de passe doit contenir au moins 6 caractères"
+  if (!Validator.isLength(data.password, { min: 6 })) {
+    errors.password = "Password must contain at least 6 characters"
+  }
+  if (!Validator.isLength(data.password, { max: 30 })) {
+    errors.password = "Password must contain at most 30 characters"
   }
   if (!Validator.equals(data.password, data.password2)) {
-    errors.password2 = "les mots de passe doivent être identiques"
+    errors.password2 = "Both password should be identical"
   }
   if (Validator.isEmpty(data.password)) {
-    errors.password = "mot de passe requis"
+    errors.password = "Password required"
   }
   if (Validator.isEmpty(data.password2)) {
-    errors.password2 = "confirmation du mot de passe requis"
+    errors.password2 = "Password confirmation required"
   }
 
   return {

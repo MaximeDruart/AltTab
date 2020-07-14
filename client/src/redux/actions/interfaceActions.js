@@ -8,11 +8,6 @@ export const setLeftPanelMode = (payload) => ({
   payload,
 })
 
-export const updateSettings = (payload) => ({
-  type: "UPDATE_SETTINGS",
-  payload,
-})
-
 export const toggleAuth = () => ({
   type: "TOGGLE_AUTH",
 })

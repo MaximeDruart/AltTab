@@ -6,6 +6,7 @@ import RightPanel from "./components/rightPanel"
 import { useSelector, useDispatch } from "react-redux"
 import AuthPopup from "./components/auth"
 import { loadUser } from "./redux/actions/authActions"
+import Alert from "./components/Alert"
 
 const AppContainer = styled.div`
   width: 100vw;
@@ -26,6 +27,7 @@ const App = () => {
 
   return (
     <AppContainer>
+      <Alert />
       <Nav />
       <LeftPanel />
       <RightPanel />

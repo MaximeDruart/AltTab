@@ -1,36 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import styled from "styled-components"
 import { styles, Button, ButtonSmall, Selector } from "../../assets/defaultStyles"
 import DisposableHelp from "./DisposableHelp"
 import gamesData from "../../assets/gamesData"
 import { useMemo } from "react"
-
-const mockupServers = [
-  {
-    name: "trash server",
-    players: 4,
-    maxPlayers: 6,
-    playing: "Ballzy",
-  },
-  {
-    name: "trash server",
-    players: 4,
-    maxPlayers: 6,
-    playing: "Ballzy",
-  },
-  {
-    name: "trash server",
-    players: 4,
-    maxPlayers: 6,
-    playing: "Ballzy",
-  },
-  {
-    name: "trash server",
-    players: 4,
-    maxPlayers: 6,
-    playing: "Ballzy",
-  },
-]
+import { WebSocketContext } from "../../WebSocketContext"
+import { useSelector } from "react-redux"
 
 const WelcomeContainer = styled.div`
   width: 94%;
@@ -141,12 +116,10 @@ const WelcomeContainer = styled.div`
 `
 
 const Welcome = () => {
-  // const [isPrivate, setIsPrivate] = useState(true)
-  const [isPrivate] = useState(true)
+  const ws = useContext(WebSocketContext)
   const [roomCode, setRoomCode] = useState("")
-  const [newLobby, setNewLobby] = useState({
-    private: true,
-  })
+  const [isNewLobbyPrivate, setIsNewLobbyPrivate] = useState(true)
+  const publicRooms = useSelector((state) => state.socket.publicRooms)
 
   const inputHandler = ({ target }) => {
     setRoomCode(target.value.toUpperCase())
@@ -163,21 +136,33 @@ const Welcome = () => {
   )
   const mappedServers = useMemo(
     () =>
-      mockupServers.map((server, index) => (
+      publicRooms.map((room, index) => (
         <div key={index} className="server">
-          <div className="name">{server.name}</div>
-          <div className="game">{server.playing}</div>
+          <div className="name">{room.name}</div>
+          <div className="game">game playing</div>
           <div className="players">
-            {server.players}/{server.maxPlayers}
+            {room.members.length}/{room.maxMembers}
           </div>
-          <ButtonSmall>Join</ButtonSmall>
+          <ButtonSmall onClick={() => ws.joinRoom(room.code)}>Join</ButtonSmall>
         </div>
       )),
-    []
+    [publicRooms]
   )
 
+  useEffect(() => {
+    ws.getPublicRooms()
+  }, [])
+
+  const createRoom = () => {
+    ws.createRoom(isNewLobbyPrivate)
+  }
+
+  const joinRoom = () => {
+    roomCode.length === 4 && ws.joinRoom(roomCode)
+  }
+
   return (
-    <WelcomeContainer isPrivate={isPrivate}>
+    <WelcomeContainer roomCode={roomCode}>
       <DisposableHelp className="welcome-disposable">
         <div className="content">
           <div className="title">Welcome To Alt Tab !</div>
@@ -198,32 +183,34 @@ const Welcome = () => {
           <div className="content">
             <Selector className="private-selector">
               <div
-                onClick={() => newLobby.private && setNewLobby({ private: false })}
-                className={newLobby.private ? "left" : "left active"}
+                onClick={() => isNewLobbyPrivate && setIsNewLobbyPrivate(false)}
+                className={isNewLobbyPrivate ? "left" : "left active"}
               >
                 Public
               </div>
               <div
-                onClick={() => !newLobby.private && setNewLobby({ private: true })}
-                className={newLobby.private ? "right active" : "right"}
+                onClick={() => !isNewLobbyPrivate && setIsNewLobbyPrivate(true)}
+                className={isNewLobbyPrivate ? "right active" : "right"}
               >
                 Private
               </div>
             </Selector>
-            <Button>Create</Button>
+            <Button onClick={createRoom}>Create</Button>
           </div>
         </div>
         <div className="join-server server-block">
           <div className="label">Join server</div>
           <div className="content">
             <input maxLength="4" value={roomCode} onChange={inputHandler} type="text" className="join-input" />
-            <Button>Join</Button>
+            <Button variant={roomCode.length < 4 ? "disabled" : null} onClick={joinRoom}>
+              Join
+            </Button>
           </div>
         </div>
       </div>
       <div className="server-browser">
         <div className="label">Browse servers</div>
-        <div className="servers">{mappedServers}</div>
+        <div className="servers">{publicRooms.length && mappedServers}</div>
       </div>
     </WelcomeContainer>
   )

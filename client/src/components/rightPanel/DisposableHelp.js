@@ -9,6 +9,7 @@ const DisposableContainer = styled.div`
   background-color: ${styles.black.medium};
   position: relative;
   border-radius: 14px;
+  ${styles.boxShadowHard};
 
   margin-bottom: 35px;
 

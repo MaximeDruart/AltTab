@@ -2,6 +2,7 @@ const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
 const app = express()
+const server = require("http").createServer(app)
 const path = require("path")
 const PORT = process.env.PORT || 3001
 require("dotenv").config()
@@ -36,6 +37,68 @@ if (process.env.NODE_ENV === "production") {
   })
 }
 
-app.listen(PORT, () => {
-  console.log(`listening on port ${PORT}`)
+server.listen(PORT, () => console.log(`listening on port ${PORT}`))
+
+// exporting server so socket logic can be in another file
+module.exports = server
+
+// SOCKET
+
+const {
+  createRoom,
+  removeUser,
+  addUser,
+  getRoomByCode,
+  addUserToRoomByCode,
+  removeUserFromRoomByCode,
+  filteredUnusedRooms,
+  getPublicRooms,
+} = require("./socketUtils")
+
+const io = require("socket.io")(server)
+io.on("connect", (socket) => {
+  addUser(socket.id)
+  console.log(`user ${socket.id} connected`)
+
+  socket.on("createRoom", (isPrivate) => {
+    const newRoom = createRoom(socket.id, isPrivate)
+    socket.join(newRoom.id)
+    socket.emit("createRoomSuccess", newRoom)
+
+    // if room is public display it in welcome page
+    !isPrivate && io.emit("getPublicRoomsSuccess", getPublicRooms())
+  })
+
+  socket.on("joinRoom", (code) => {
+    const room = getRoomByCode(code)
+    if (room) {
+      // modifying our server state
+      addUserToRoomByCode(socket.id, code)
+      // place the user in the socket room so that it can broadcast and receive accordingly
+      socket.join(room.id, (err) => {
+        // emitting a success event to the caller who can then safely redirect to the new url
+        socket.emit("joinRoomSuccess", room)
+        // then inform room members of the new user
+        socket.to(room.id).emit("newUserJoined", socket.id)
+      })
+    } else {
+      // if the room doesn't exist emit an error to caller
+      socket.emit("joinRoomError", `No room found with code ${code}`)
+    }
+  })
+
+  socket.on("getPublicRooms", () => socket.emit("getPublicRoomsSuccess", getPublicRooms()))
+
+  socket.on("leaveRoom", (code) => {
+    removeUserFromRoomByCode(socket.id, code)
+    const room = getRoomByCode(code)
+    // neded to put in username
+    socket.to(room.id).emit("userLeftRoom", socket.id)
+    socket.leave(room.id, (err) => {
+      socket.emit("leaveRoomSuccess", "")
+      filteredUnusedRooms()
+    })
+  })
+
+  socket.on("disconnect", () => {})
 })

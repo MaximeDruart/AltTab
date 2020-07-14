@@ -1,7 +1,5 @@
 const initialState = {
-  activeLeftPanel: "PROFILE", // will switch between "PROFILE" and "LOBBY"
-  // lobby: null, // will contain all the data for the lobby that the player is in
-  // mockup lobby for the time being
+  activeLeftPanel: "LOBBY", // will switch between "PROFILE" and "LOBBY"
   lobby: {
     lobbyName: "Maxime's game",
     settings: {
