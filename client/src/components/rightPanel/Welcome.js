@@ -198,7 +198,7 @@ const Welcome = () => {
             <Button onClick={createRoom}>Create</Button>
           </div>
         </div>
-        <div className="join-server server-block">
+        <form onSubmit={(e) => e.preventDefault()} className="join-server server-block">
           <div className="label">Join server</div>
           <div className="content">
             <input maxLength="4" value={roomCode} onChange={inputHandler} type="text" className="join-input" />
@@ -206,11 +206,17 @@ const Welcome = () => {
               Join
             </Button>
           </div>
-        </div>
+        </form>
       </div>
       <div className="server-browser">
         <div className="label">Browse servers</div>
-        <div className="servers">{publicRooms.length && mappedServers}</div>
+        <div className="servers">
+          {publicRooms.length ? (
+            mappedServers
+          ) : (
+            <div className="no-server">No public servers found. Create your own !</div>
+          )}
+        </div>
       </div>
     </WelcomeContainer>
   )

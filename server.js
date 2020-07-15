@@ -50,9 +50,11 @@ const {
   addUser,
   getRoomByCode,
   addUserToRoomByCode,
-  removeUserFromRoomByCode,
   filteredUnusedRooms,
   getPublicRooms,
+  removeUserFromAllRooms,
+  userIsInRoom,
+  getUserRoom,
 } = require("./socketUtils")
 
 const io = require("socket.io")(server)
@@ -87,18 +89,31 @@ io.on("connect", (socket) => {
     }
   })
 
+  // query from user to get all public rooms
   socket.on("getPublicRooms", () => socket.emit("getPublicRoomsSuccess", getPublicRooms()))
 
+  // when user manually leaves room
   socket.on("leaveRoom", (code) => {
-    removeUserFromRoomByCode(socket.id, code)
     const room = getRoomByCode(code)
-    // neded to put in username
     socket.to(room.id).emit("userLeftRoom", socket.id)
     socket.leave(room.id, (err) => {
+      removeUserFromAllRooms(socket.id)
       socket.emit("leaveRoomSuccess", "")
       filteredUnusedRooms()
     })
   })
 
-  socket.on("disconnect", () => {})
+  // when user forcibly disconnects (refresh / close tab)
+  socket.on("disconnect", () => {
+    console.log(`user ${socket.id} disconnected`)
+    if (userIsInRoom(socket.id)) {
+      const room = getUserRoom(socket.id)
+      socket.to(room.id).emit("userLeftRoom", socket.id)
+      socket.leave(room.id, (err) => {
+        removeUserFromAllRooms(socket.id)
+        filteredUnusedRooms()
+      })
+    }
+    removeUser(socket.id)
+  })
 })

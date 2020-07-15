@@ -5,8 +5,8 @@ let users = []
 const addUser = (user) => {
   users.push(user)
 }
-const removeUser = (userProvided) => {
-  users = users.filter((user) => user !== userProvided.id)
+const removeUser = (userIdProvided) => {
+  users = users.filter((user) => user !== userIdProvided)
 }
 
 const generateCode = () => {
@@ -42,10 +42,18 @@ const addUserToRoomByCode = (userId, code) => {
   room.members.push(userId)
 }
 
-const removeUserFromRoomByCode = (userId, code) => {
-  const room = getRoomByCode(code)
-  const roomIndex = rooms.findIndex((_room) => _room.id === room.id)
-  rooms[roomIndex].members = rooms[roomIndex].members.filter((memberId) => memberId !== userId)
+// same function as above except it doesn't get a room code and searches for all room
+// keeping the above function as it's more efficient
+const removeUserFromAllRooms = (userId) => {
+  for (const room of rooms) {
+    room.members = room.members.filter((member) => member !== userId)
+  }
+}
+
+const userIsInRoom = (userId) => {
+  let doesInclude = false
+  for (const room of rooms) doesInclude = room.members.includes(userId)
+  return doesInclude
 }
 
 const getPublicRooms = () => rooms.filter((room) => !room.private)
@@ -53,7 +61,7 @@ const getPublicRooms = () => rooms.filter((room) => !room.private)
 const getRoomByCode = (codeProvided) => rooms.find((room) => room.code === codeProvided)
 
 // searches room for provided user. returns undefined if none found
-const getUserRoom = (rooms, userId) => rooms.find((room) => room.members.includes(userId))
+const getUserRoom = (userId) => rooms.find((room) => room.members.includes(userId))
 
 const getRoomForId = (rooms, roomId) => rooms.find((room) => room.id === roomId)
 //
@@ -67,6 +75,7 @@ module.exports = {
   filteredUnusedRooms,
   getRoomByCode,
   addUserToRoomByCode,
-  removeUserFromRoomByCode,
   getPublicRooms,
+  removeUserFromAllRooms,
+  userIsInRoom,
 }

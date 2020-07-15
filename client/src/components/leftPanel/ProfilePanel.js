@@ -5,6 +5,7 @@ import logoutSvg from "../../assets/icons/logout.svg"
 import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth, setAuthMode } from "../../redux/actions/interfaceActions"
 import { logoutUser } from "../../redux/actions/authActions"
+import { RandomAvatar } from "../../assets/utils"
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -29,12 +30,18 @@ const ProfileContainer = styled.div`
     flex-flow: row nowrap;
     align-items: center;
     .pfp {
-      width: 115px;
-      height: 115px;
-      border-radius: 50%;
-      background-color: ${styles.blue};
+      ${styles.flexCentered};
+      width: 100px;
+      height: 100px;
       flex-shrink: 0;
       position: relative;
+      img {
+        width: 120%;
+        height: 120%;
+        /* offsetting it a bit as the head doesn't fit in the circle */
+        position: relative;
+        top: -10%;
+      }
       .add {
         position: absolute;
       }
@@ -127,7 +134,7 @@ const Profile = () => {
       </div>
       <div className="head">
         <div className="pfp">
-          <div className="img"></div>
+          <RandomAvatar />
           <div className="add"></div>
         </div>
         <div className="infos">

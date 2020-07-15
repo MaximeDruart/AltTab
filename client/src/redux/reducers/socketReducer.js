@@ -28,9 +28,7 @@ export default (state = initialState, { type, payload }) => {
       }
     case "USER_LEFT_ROOM":
       newRoom = state.room
-      console.log(payload)
-      console.log(newRoom.members)
-      newRoom.members = newRoom.members.filter((member) => member === payload)
+      newRoom.members = newRoom.members.filter((member) => member !== payload)
       return {
         ...state,
         room: newRoom,

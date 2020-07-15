@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import styled from "styled-components"
 import closeSvg from "../assets/icons/close.svg"
 import { styles } from "../assets/defaultStyles"
@@ -38,12 +38,21 @@ const AlertContainer = styled.div`
 `
 
 const Alert = () => {
+  const [timeoutState, setTimeoutState] = useState(null)
   const socketError = useSelector((state) => state.socket.error)
   const dispatch = useDispatch()
 
-  const dismiss = () => {
-    dispatch(setSocketError(""))
-  }
+  const dismiss = () => dispatch(setSocketError(""))
+
+  useEffect(() => setTimeoutState(setTimeout(dismiss, 0)), [])
+
+  useEffect(() => {
+    clearTimeout(timeoutState)
+    if (socketError) {
+      setTimeoutState(setTimeout(dismiss, 2000))
+    }
+  }, [socketError])
+
   return (
     <AlertContainer show={socketError}>
       <div className="message">{socketError}</div>
