@@ -119,14 +119,18 @@ const randomOptions = () => {
   return options
 }
 
-const RandomAvatar = ({ enableChange }) => {
-  const [options, setOptions] = useState(null)
+const RandomAvatar = ({ enableChange, optionProps }) => {
+  const [options, setOptions] = useState(optionProps)
 
   useEffect(() => {
-    if (localStorage.getItem("avatarOptions")) {
-      setOptions(JSON.parse(localStorage.getItem("avatarOptions")))
-    } else {
-      updateOptions()
+    // if options are passed through props use them
+    if (!optionProps) {
+      // else check for local storage and if not found create options
+      if (localStorage.getItem("avatarOptions")) {
+        setOptions(JSON.parse(localStorage.getItem("avatarOptions")))
+      } else {
+        updateOptions()
+      }
     }
   }, [])
 
@@ -138,7 +142,7 @@ const RandomAvatar = ({ enableChange }) => {
 
   return (
     <>
-      <Avatar {...options} />
+      <Avatar {...(optionProps || options)} />
       {enableChange && (
         <div onClick={updateOptions} className="change">
           <img src={resetSvg} alt="" />

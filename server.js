@@ -46,9 +46,8 @@ module.exports = server
 
 const {
   createRoom,
+  createUser,
   removeUser,
-  addUser,
-  setRandomName,
   getRoomByCode,
   addUserToRoomByCode,
   filteredUnusedRooms,
@@ -60,12 +59,22 @@ const {
 
 const io = require("socket.io")(server)
 io.on("connect", (socket) => {
-  addUser(socket.id)
   console.log(`user ${socket.id} connected`)
-  setRandomName(socket)
+
+  // first we create a user with some random options like name, id, avatar etc
+  createUser(socket)
+
+  // then the client sends its personal info such as auth status, username, avatar etc which will overwrite the previous data
+  socket.on("userInfo", (userData) => {
+    if (userData.username) socket.user.name = userData.username
+    if (userData.avatar) socket.user.avatar = userData.avatar
+  })
+
+  // then we're sending it back to the client
+  socket.emit("socketData", socket.user)
 
   socket.on("createRoom", (isPrivate) => {
-    const newRoom = createRoom(socket.id, isPrivate)
+    const newRoom = createRoom(socket.user, isPrivate)
     socket.join(newRoom.id)
     socket.emit("createRoomSuccess", newRoom)
 
@@ -82,18 +91,14 @@ io.on("connect", (socket) => {
   socket.on("joinRoom", (code) => {
     const room = getRoomByCode(code)
     if (room) {
-      // modifying our server state
+      // updating our server state
       addUserToRoomByCode(socket.id, code)
       // place the user in the socket room so that it can broadcast and receive accordingly
       socket.join(room.id, (err) => {
         // emitting a success event to the caller who can then safely redirect to the new url
         socket.emit("joinRoomSuccess", room)
         // then inform room members of the new user
-        socket.to(room.id).emit("newUserJoined", socket.id)
-        // socket.to(room.id).emit("newUserJoined", {
-        //   id: socket.id,
-        //   name: socket.name,
-        // })
+        socket.to(room.id).emit("newUserJoined", socket.user)
       })
     } else {
       // if the room doesn't exist emit an error to caller
@@ -107,28 +112,37 @@ io.on("connect", (socket) => {
   // when user manually leaves room
   socket.on("leaveRoom", (code) => {
     const room = getRoomByCode(code)
-    socket.to(room.id).emit("userLeftRoom", socket.id)
+    socket.to(room.id).emit("userLeftRoom", socket.user)
     socket.leave(room.id, (err) => {
-      removeUserFromAllRooms(socket.id)
+      removeUserFromAllRooms(socket.user)
       socket.emit("leaveRoomSuccess", "")
       filteredUnusedRooms()
-      socket.emit("getPublicRoomsSuccess", getPublicRooms())
+      io.emit("getPublicRoomsSuccess", getPublicRooms())
     })
   })
 
   // when user forcibly disconnects (refresh / close tab)
   socket.on("disconnect", () => {
     console.log(`user ${socket.id} disconnected`)
-    console.log(socket.name)
-    if (userIsInRoom(socket.id)) {
-      const room = getUserRoom(socket.id)
-      socket.to(room.id).emit("userLeftRoom", socket.id)
+    if (userIsInRoom(socket.user)) {
+      const room = getUserRoom(socket.user)
+      socket.to(room.id).emit("userLeftRoom", socket.user)
       socket.leave(room.id, (err) => {
-        removeUserFromAllRooms(socket.id)
+        removeUserFromAllRooms(socket.user)
         filteredUnusedRooms()
-        socket.emit("getPublicRoomsSuccess", getPublicRooms())
+        io.emit("getPublicRoomsSuccess", getPublicRooms())
+        removeUser(socket.id)
       })
     }
-    removeUser(socket.id)
+  })
+
+  socket.on("sendMessage", (message) => {
+    const room = getUserRoom(socket.user)
+    console.log(room.id)
+    io.to(room.id).emit("receiveMessage", {
+      date: Date.now(),
+      author: socket.user.name,
+      content: message,
+    })
   })
 })

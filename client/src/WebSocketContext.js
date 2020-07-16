@@ -8,8 +8,9 @@ import {
   newUserJoined,
   leftRoom,
   userLeftRoom,
-  updateMessages,
+  updateChatMessages,
   setPublicRooms,
+  setSocketData,
 } from "./redux/actions/socketActions"
 import { setLeftPanel } from "./redux/actions/interfaceActions"
 
@@ -25,6 +26,7 @@ export default ({ children }) => {
   const history = useHistory()
   const dispatch = useDispatch()
   const room = useSelector((state) => state.socket.room)
+  const { isAuthenticated, user } = useSelector((state) => state.auth)
 
   const createRoom = (isPrivate) => socket.emit("createRoom", isPrivate)
   const joinRoom = (roomCode) => socket.emit("joinRoom", roomCode)
@@ -44,6 +46,10 @@ export default ({ children }) => {
   if (!socket) {
     console.log("creating new socket connection")
     socket = io.connect("http://localhost:3001")
+
+    socket.on("socketData", (data) => {
+      dispatch(setSocketData(data))
+    })
 
     socket.on("getRoomInfoSuccess", (res) => {
       if (!res.error) {
@@ -84,23 +90,35 @@ export default ({ children }) => {
     })
 
     socket.on("getPublicRoomsSuccess", (rooms) => {
-      console.log("receiving rooms")
       dispatch(setPublicRooms(rooms))
     })
 
     socket.on("receiveMessage", (message) => {
-      dispatch(updateMessages(message))
+      console.log("received message cleintside", message)
+      dispatch(updateChatMessages(message))
     })
 
     ws = {
       socket,
       sendMessage,
       createRoom,
-      joinRoom,
       leaveRoom,
       getPublicRooms,
     }
   }
+
+  useEffect(() => {
+    if (socket) {
+      if (isAuthenticated) {
+        let userInfo = {
+          username: user.username,
+          isAuthenticated: user.isAuthenticated,
+        }
+        if (localStorage.getItem("avatar")) userInfo.avatar = localStorage.getItem("avatar")
+        socket.emit("userInfo", userInfo)
+      }
+    }
+  }, [])
 
   return <WebSocketContext.Provider value={ws}>{children}</WebSocketContext.Provider>
 }

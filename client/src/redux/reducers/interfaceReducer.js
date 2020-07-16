@@ -1,41 +1,5 @@
 const initialState = {
   activeLeftPanel: "LOBBY", // will switch between "PROFILE" and "LOBBY"
-  lobby: {
-    lobbyName: "Maxime's game",
-    settings: {
-      private: true,
-      maxPlayers: 6,
-      rounds: 3,
-      link: "XyZa",
-    },
-    nbOfPlayers: 8,
-    players: [
-      {
-        name: "Maxime",
-        role: "owner",
-      },
-      {
-        name: "Visiteur 2624",
-        role: "user",
-      },
-      {
-        name: "test 3",
-        role: "user",
-      },
-      {
-        name: "test 4",
-        role: "user",
-      },
-      {
-        name: "test 4",
-        role: "user",
-      },
-      {
-        name: "test 4",
-        role: "user",
-      },
-    ],
-  },
   leftPanelMode: "USERS", // switch between "USERS" and "SETTINGS"
   showAuth: false,
   authMode: "REGISTER", // switches between "REGISTER" and "LOGIN"

@@ -3,6 +3,7 @@ const initialState = {
   chatMessages: [],
   error: "",
   publicRooms: [],
+  socketData: null,
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -13,11 +14,17 @@ export default (state = initialState, { type, payload }) => {
         ...state,
         room: payload,
       }
+    case "SET_SOCKET_DATA":
+      return {
+        ...state,
+        socketData: payload,
+      }
     case "SET_SOCKET_ERROR":
       return {
         ...state,
         error: payload,
       }
+
     case "NEW_USER_JOINED":
       return {
         ...state,
@@ -28,7 +35,7 @@ export default (state = initialState, { type, payload }) => {
       }
     case "USER_LEFT_ROOM":
       newRoom = state.room
-      newRoom.members = newRoom.members.filter((member) => member !== payload)
+      newRoom.members = newRoom.members.filter((member) => member.id !== payload.id)
       return {
         ...state,
         room: newRoom,
@@ -46,7 +53,7 @@ export default (state = initialState, { type, payload }) => {
         publicRooms: payload,
       }
 
-    case "UPDATE_MESSAGES":
+    case "UPDATE_CHAT_MESSAGES":
       return {
         ...state,
         chatMessages: [...state.chatMessages, payload],

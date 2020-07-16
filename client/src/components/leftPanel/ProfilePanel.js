@@ -52,6 +52,7 @@ const ProfileContainer = styled.div`
         border-radius: 50%;
         bottom: 15%;
         right: 2%;
+        cursor: pointer;
         img {
           width: 70%;
           height: 70%;
@@ -138,6 +139,7 @@ const Profile = () => {
   const dispatch = useDispatch()
 
   const { user, isAuthenticated } = useSelector((state) => state.auth)
+  const socketData = useSelector((state) => state.socket.socketData)
 
   return (
     <ProfileContainer>
@@ -146,11 +148,17 @@ const Profile = () => {
       </div>
       <div className="head">
         <div className="pfp">
-          <Avatar enableChange={true} />
+          {isAuthenticated ? <Avatar enableChange={true} /> : socketData && <Avatar optionProps={socketData.avatar} />}
         </div>
         <div className="infos">
-          <div className="name">{user?.username || "Visiteur"}</div>
-          {isAuthenticated && <div className="email">{user?.email}</div>}
+          {isAuthenticated ? (
+            <>
+              <div className="name">{user?.username || "Visiteur"}</div>
+              <div className="email">{user?.email}</div>
+            </>
+          ) : (
+            <div className="name">{socketData.name}</div>
+          )}
         </div>
       </div>
       {isAuthenticated ? (

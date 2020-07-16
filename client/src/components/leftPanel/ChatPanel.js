@@ -1,7 +1,9 @@
-import React from "react"
+import React, { useContext, useState } from "react"
 import styled from "styled-components"
 import { styles } from "../../assets/defaultStyles"
 import PerfectScrollbar from "react-perfect-scrollbar"
+import { WebSocketContext } from "../../WebSocketContext"
+import { useSelector } from "react-redux"
 
 const mockupMessages = [
   {
@@ -97,8 +99,11 @@ const ChatContainer = styled.div`
 `
 
 const ChatPanel = () => {
+  const chatMessages = useSelector((state) => state.socket.chatMessages)
+  const ws = useContext(WebSocketContext)
+  const [input, setInput] = useState("")
   const getMessages = () =>
-    mockupMessages.map((msg, index) => (
+    chatMessages.map((msg, index) => (
       <div key={index} className="message">
         <div className="infos">
           <span className="date">{msg.date}</span>
@@ -107,6 +112,15 @@ const ChatPanel = () => {
         <div className="content">{msg.content}</div>
       </div>
     ))
+  const sendMsg = (e) => {
+    e.preventDefault()
+    ws.sendMessage(input)
+    setInput("")
+  }
+
+  const onChangeHandler = ({ target }) => {
+    setInput(target.value)
+  }
   return (
     <ChatContainer>
       <div className="messages">
@@ -119,7 +133,9 @@ const ChatPanel = () => {
           {getMessages()}
         </PerfectScrollbar>
       </div>
-      <input className="chat-input" type="text" />
+      <form onSubmit={sendMsg}>
+        <input value={input} onChange={onChangeHandler} className="chat-input" type="text" />
+      </form>
     </ChatContainer>
   )
 }

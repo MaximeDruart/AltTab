@@ -8,6 +8,7 @@ import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import { setLeftPanelMode } from "../../redux/actions/interfaceActions"
 import { updateRoomSettings } from "../../redux/actions/socketActions"
+import Avatar from "./Avatar"
 
 import ChatPanel from "./ChatPanel"
 import { WebSocketContext } from "../../WebSocketContext"
@@ -168,7 +169,12 @@ const PlayerContainer = styled.div`
     height: 52px;
     border-radius: 26px;
     background-color: ${styles.black.light};
-    border: 1px solid ${styles.blue};
+    svg {
+      width: 120%;
+      height: 120%;
+      position: relative;
+      top: -20%;
+    }
   }
   .name-tag {
     display: flex;
@@ -194,16 +200,19 @@ const LobbyPanel = () => {
   const { room } = useSelector((state) => state.socket)
   const dispatch = useDispatch()
 
-  const getPlayers = () =>
-    room.members.map((player, index) => (
+  const getPlayers = () => {
+    return room.members.map((member, index) => (
       <PlayerContainer index={index} key={index}>
-        {player.role === "owner" && <div className="crown"></div>}
-        <div className="picture"></div>
+        {member.id === room.ownerId && <div className="crown"></div>}
+        <div className="picture">
+          <Avatar optionProps={member.avatar} />
+        </div>
         <div className="name-tag">
-          <span>{player}</span>
+          <span>{member.name}</span>
         </div>
       </PlayerContainer>
     ))
+  }
 
   const toggleLeftPanelMode = () => {
     if (leftPanelMode === "USERS") return dispatch(setLeftPanelMode("SETTINGS"))
