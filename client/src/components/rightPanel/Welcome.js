@@ -6,6 +6,7 @@ import gamesData from "../../assets/gamesData"
 import { useMemo } from "react"
 import { WebSocketContext } from "../../WebSocketContext"
 import { useSelector } from "react-redux"
+import { useHistory } from "react-router-dom"
 
 const WelcomeContainer = styled.div`
   width: 94%;
@@ -116,6 +117,7 @@ const WelcomeContainer = styled.div`
 `
 
 const Welcome = () => {
+  const history = useHistory()
   const ws = useContext(WebSocketContext)
   const [roomCode, setRoomCode] = useState("")
   const [isNewLobbyPrivate, setIsNewLobbyPrivate] = useState(true)
@@ -143,22 +145,22 @@ const Welcome = () => {
           <div className="players">
             {room.members.length}/{room.maxMembers}
           </div>
-          <ButtonSmall onClick={() => ws.joinRoom(room.code)}>Join</ButtonSmall>
+          <ButtonSmall onClick={() => history.push(room.code)}>Join</ButtonSmall>
         </div>
       )),
-    [publicRooms]
+    [publicRooms, history]
   )
 
   useEffect(() => {
     ws.getPublicRooms()
-  }, [])
+  }, [ws])
 
   const createRoom = () => {
     ws.createRoom(isNewLobbyPrivate)
   }
 
   const joinRoom = () => {
-    roomCode.length === 4 && ws.joinRoom(roomCode)
+    roomCode.length === 4 && history.push(roomCode)
   }
 
   return (

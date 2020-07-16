@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require("uuid")
+const axios = require("axios")
 let rooms = []
 let users = []
 
@@ -64,10 +65,23 @@ const getRoomByCode = (codeProvided) => rooms.find((room) => room.code === codeP
 const getUserRoom = (userId) => rooms.find((room) => room.members.includes(userId))
 
 const getRoomForId = (rooms, roomId) => rooms.find((room) => room.id === roomId)
+
+const setRandomName = (socket) => {
+  axios
+    .get("http://names.drycodes.com/1?nameOptions=funnyWords&separator=space")
+    .then((res) => {
+      socket.name = res.data[0]
+    })
+    .catch((err) => {
+      socket.name = "Visiteur" + socket.id.slice(0, 4)
+    })
+}
+
 //
 
 module.exports = {
   addUser,
+  setRandomName,
   removeUser,
   createRoom,
   getUserRoom,

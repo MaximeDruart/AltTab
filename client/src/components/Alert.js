@@ -44,6 +44,7 @@ const Alert = () => {
 
   const dismiss = () => dispatch(setSocketError(""))
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setTimeoutState(setTimeout(dismiss, 0)), [])
 
   useEffect(() => {
@@ -51,6 +52,7 @@ const Alert = () => {
     if (socketError) {
       setTimeoutState(setTimeout(dismiss, 2000))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socketError])
 
   return (

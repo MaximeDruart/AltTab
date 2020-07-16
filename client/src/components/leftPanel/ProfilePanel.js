@@ -5,7 +5,7 @@ import logoutSvg from "../../assets/icons/logout.svg"
 import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth, setAuthMode } from "../../redux/actions/interfaceActions"
 import { logoutUser } from "../../redux/actions/authActions"
-import { RandomAvatar } from "../../assets/utils"
+import Avatar from "./Avatar"
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -35,15 +35,27 @@ const ProfileContainer = styled.div`
       height: 100px;
       flex-shrink: 0;
       position: relative;
-      img {
-        width: 120%;
-        height: 120%;
+      svg {
+        width: 100%;
+        height: 100%;
         /* offsetting it a bit as the head doesn't fit in the circle */
-        position: relative;
-        top: -10%;
-      }
-      .add {
         position: absolute;
+        top: -7%;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .change {
+        ${styles.flexCentered};
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        background: ${styles.blue};
+        border-radius: 50%;
+        bottom: 15%;
+        right: 2%;
+        img {
+          width: 70%;
+          height: 70%;
+        }
       }
     }
     .infos {
@@ -134,8 +146,7 @@ const Profile = () => {
       </div>
       <div className="head">
         <div className="pfp">
-          <RandomAvatar />
-          <div className="add"></div>
+          <Avatar enableChange={true} />
         </div>
         <div className="infos">
           <div className="name">{user?.username || "Visiteur"}</div>

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react"
+import Avatar from "avataaars"
+import resetSvg from "../../assets/icons/reset.svg"
 
 const avatarOptions = {
+  avatarStyle: ["Circle"],
   topType: [
     "NoHair",
     "Eyepatch",
@@ -108,24 +111,41 @@ const avatarOptions = {
   skinColor: ["Tanned", "Yellow", "Pale", "Light", "Brown", "DarkBrown", "Black"],
 }
 
-const randomSrc = () => {
-  let str = "https://avataaars.io/?avatarStyle=Circle"
+const randomOptions = () => {
+  let options = {}
   for (const prop in avatarOptions) {
-    str += `&${prop}=${avatarOptions[prop][Math.floor(Math.random() * avatarOptions[prop].length)]}`
+    options[prop] = avatarOptions[prop][Math.floor(Math.random() * avatarOptions[prop].length)]
   }
-  return str
+  return options
 }
 
-export const RandomAvatar = () => {
-  const [src, setSrc] = useState("")
+const RandomAvatar = ({ enableChange }) => {
+  const [options, setOptions] = useState(null)
+
   useEffect(() => {
-    if (localStorage.getItem("avatar")) {
-      setSrc(localStorage.getItem("avatar"))
+    if (localStorage.getItem("avatarOptions")) {
+      setOptions(JSON.parse(localStorage.getItem("avatarOptions")))
     } else {
-      const newSrc = randomSrc()
-      setSrc(newSrc)
-      localStorage.setItem("avatar", newSrc)
+      updateOptions()
     }
   }, [])
-  return <img src={src} alt=""></img>
+
+  const updateOptions = () => {
+    const newOptions = randomOptions()
+    setOptions(newOptions)
+    localStorage.setItem("avatarOptions", JSON.stringify(newOptions))
+  }
+
+  return (
+    <>
+      <Avatar {...options} />
+      {enableChange && (
+        <div onClick={updateOptions} className="change">
+          <img src={resetSvg} alt="" />
+        </div>
+      )}
+    </>
+  )
 }
+
+export default RandomAvatar

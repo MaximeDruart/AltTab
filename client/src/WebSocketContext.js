@@ -1,6 +1,6 @@
-import React, { createContext } from "react"
+import React, { createContext, useEffect } from "react"
 import io from "socket.io-client"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useHistory } from "react-router-dom"
 import {
   setRoom,
@@ -24,17 +24,37 @@ export default ({ children }) => {
   const { pathname } = useLocation()
   const history = useHistory()
   const dispatch = useDispatch()
+  const room = useSelector((state) => state.socket.room)
 
   const createRoom = (isPrivate) => socket.emit("createRoom", isPrivate)
   const joinRoom = (roomCode) => socket.emit("joinRoom", roomCode)
   const leaveRoom = (code) => socket.emit("leaveRoom", code)
+  const getRoomInfo = (code) => socket.emit("getRoomInfo", code)
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
   const sendMessage = (message) => socket.emit("sendMessage", message)
 
+  useEffect(() => {
+    // if pathname is not homepage and contains smth ( aka a code) AND a room isnt already in store (ie you've just created a room)
+    if (pathname !== "/" && !room) {
+      // send a room info request with pathname code
+      getRoomInfo(pathname.slice(1))
+    }
+  }, [pathname])
+
   if (!socket) {
     console.log("creating new socket connection")
-
     socket = io.connect("http://localhost:3001")
+
+    socket.on("getRoomInfoSuccess", (res) => {
+      if (!res.error) {
+        // if the server sends back a room, join it
+        joinRoom(res.code)
+      } else {
+        // else redirect to homepage
+        dispatch(setSocketError(res.error))
+        history.push("/")
+      }
+    })
 
     socket.on("createRoomSuccess", (room) => {
       dispatch(setRoom(room))
@@ -44,7 +64,6 @@ export default ({ children }) => {
 
     socket.on("joinRoomSuccess", (room) => {
       dispatch(setRoom(room))
-      history.push(`/${room.code}`)
     })
 
     socket.on("joinRoomError", (error) => {
@@ -52,12 +71,10 @@ export default ({ children }) => {
     })
 
     socket.on("newUserJoined", (user) => {
-      console.log("new user joined !", user)
       dispatch(newUserJoined(user))
     })
 
     socket.on("userLeftRoom", (user) => {
-      console.log("user left !", user)
       dispatch(userLeftRoom(user))
     })
 

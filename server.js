@@ -48,6 +48,7 @@ const {
   createRoom,
   removeUser,
   addUser,
+  setRandomName,
   getRoomByCode,
   addUserToRoomByCode,
   filteredUnusedRooms,
@@ -61,6 +62,7 @@ const io = require("socket.io")(server)
 io.on("connect", (socket) => {
   addUser(socket.id)
   console.log(`user ${socket.id} connected`)
+  setRandomName(socket)
 
   socket.on("createRoom", (isPrivate) => {
     const newRoom = createRoom(socket.id, isPrivate)
@@ -69,6 +71,12 @@ io.on("connect", (socket) => {
 
     // if room is public display it in welcome page
     !isPrivate && io.emit("getPublicRoomsSuccess", getPublicRooms())
+  })
+
+  socket.on("getRoomInfo", (roomCode) => {
+    // if there's a room send it back, else send an error
+    const answer = getRoomByCode(roomCode) ? getRoomByCode(roomCode) : { error: `no room found with code ${roomCode}` }
+    socket.emit("getRoomInfoSuccess", answer)
   })
 
   socket.on("joinRoom", (code) => {
@@ -82,6 +90,10 @@ io.on("connect", (socket) => {
         socket.emit("joinRoomSuccess", room)
         // then inform room members of the new user
         socket.to(room.id).emit("newUserJoined", socket.id)
+        // socket.to(room.id).emit("newUserJoined", {
+        //   id: socket.id,
+        //   name: socket.name,
+        // })
       })
     } else {
       // if the room doesn't exist emit an error to caller
@@ -100,18 +112,21 @@ io.on("connect", (socket) => {
       removeUserFromAllRooms(socket.id)
       socket.emit("leaveRoomSuccess", "")
       filteredUnusedRooms()
+      socket.emit("getPublicRoomsSuccess", getPublicRooms())
     })
   })
 
   // when user forcibly disconnects (refresh / close tab)
   socket.on("disconnect", () => {
     console.log(`user ${socket.id} disconnected`)
+    console.log(socket.name)
     if (userIsInRoom(socket.id)) {
       const room = getUserRoom(socket.id)
       socket.to(room.id).emit("userLeftRoom", socket.id)
       socket.leave(room.id, (err) => {
         removeUserFromAllRooms(socket.id)
         filteredUnusedRooms()
+        socket.emit("getPublicRoomsSuccess", getPublicRooms())
       })
     }
     removeUser(socket.id)
