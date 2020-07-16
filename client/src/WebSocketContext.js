@@ -94,7 +94,6 @@ export default ({ children }) => {
     })
 
     socket.on("receiveMessage", (message) => {
-      console.log("received message cleintside", message)
       dispatch(updateChatMessages(message))
     })
 
