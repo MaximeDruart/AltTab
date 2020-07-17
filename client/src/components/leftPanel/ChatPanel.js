@@ -5,54 +5,6 @@ import PerfectScrollbar from "react-perfect-scrollbar"
 import { WebSocketContext } from "../../WebSocketContext"
 import { useSelector } from "react-redux"
 
-const mockupMessages = [
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:58",
-    content: "jes suis un message feaiohgieagn fazifhazlkfaz",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-  {
-    author: "Eythan",
-    date: "17:55",
-    content: "je suis un message",
-  },
-]
-
 const ChatContainer = styled.div`
   height: 42%;
   width: 100%;
@@ -65,6 +17,7 @@ const ChatContainer = styled.div`
   justify-content: space-between;
   .messages {
     height: 90%;
+    width: 100%;
     .message {
       margin-bottom: 10px;
       margin-top: 4px;
@@ -83,17 +36,20 @@ const ChatContainer = styled.div`
       }
     }
   }
-  .chat-input {
+  form {
     width: 100%;
-    background-color: ${styles.black.medium};
-    border: none;
-    height: 30px;
-    border-radius: 10px;
-    padding-left: 7px;
-    margin: 0 auto;
-    &:focus {
-      border: 1px solid ${styles.blue};
-      outline: none;
+    .chat-input {
+      width: 100%;
+      background-color: ${styles.black.medium};
+      border: none;
+      height: 30px;
+      border-radius: 10px;
+      padding-left: 7px;
+      margin: 0 auto;
+      &:focus {
+        border: 1px solid ${styles.blue};
+        outline: none;
+      }
     }
   }
 `
@@ -109,7 +65,7 @@ const ChatPanel = () => {
           <span className="date">{msg.date}</span>
           <span className="author">{msg.author}</span>
         </div>
-        <div className="content">{msg.content}</div>
+        <div className={"content"}>{msg.content}</div>
       </div>
     ))
   const sendMsg = (e) => {

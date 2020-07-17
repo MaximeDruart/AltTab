@@ -165,7 +165,7 @@ const Welcome = () => {
 
   return (
     <WelcomeContainer roomCode={roomCode}>
-      <DisposableHelp className="welcome-disposable">
+      <DisposableHelp storageKey="showWelcomeToolTip" className="welcome-disposable">
         <div className="content">
           <div className="title">Welcome To Alt Tab !</div>
           <div className="body">

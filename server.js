@@ -55,6 +55,7 @@ const {
   removeUserFromAllRooms,
   userIsInRoom,
   getUserRoom,
+  addVote,
 } = require("./socketUtils")
 
 const io = require("socket.io")(server)
@@ -138,11 +139,17 @@ io.on("connect", (socket) => {
 
   socket.on("sendMessage", (message) => {
     const room = getUserRoom(socket.user)
-    console.log(room.id)
+    const date = new Date()
     io.to(room.id).emit("receiveMessage", {
-      date: Date.now(),
+      date: `${date.getHours()}:${date.getMinutes()}`,
       author: socket.user.name,
       content: message,
     })
+  })
+
+  socket.on("vote", (game) => {
+    const room = getUserRoom(socket.user)
+    addVote(game, socket.user)
+    io.to(room.id).emit("votes", room)
   })
 })

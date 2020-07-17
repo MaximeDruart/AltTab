@@ -46,6 +46,11 @@ const createRoom = (user, isPrivate) => {
     private: isPrivate,
     code: generateCode(),
     maxMembers: 12,
+    votes: {
+      Lighty: [],
+      Gummy: [],
+      Ballzy: [],
+    },
   }
   rooms.push(room)
   return room
@@ -215,6 +220,27 @@ const getRandomAvatarOptions = () => {
   return options
 }
 
+const addVote = (game, user) => {
+  const room = getUserRoom(user)
+
+  // remove vote from all other games
+  for (const _game in room.votes) {
+    if (_game !== game) {
+      room.votes[_game] = room.votes[_game].filter((voter) => voter.id !== user.id)
+    }
+  }
+
+  // toggle on the clicked game
+  let userHasVotedForGame = false
+  for (const voter of room.votes[game]) if (voter.id === user.id) userHasVotedForGame = true
+
+  if (userHasVotedForGame) {
+    room.votes[game] = room.votes[game].filter((voter) => voter.id !== user.id)
+  } else {
+    room.votes[game].push(user)
+  }
+}
+
 module.exports = {
   createUser,
   removeUser,
@@ -227,4 +253,5 @@ module.exports = {
   getPublicRooms,
   removeUserFromAllRooms,
   userIsInRoom,
+  addVote,
 }

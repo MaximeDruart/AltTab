@@ -34,6 +34,7 @@ export default ({ children }) => {
   const getRoomInfo = (code) => socket.emit("getRoomInfo", code)
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
   const sendMessage = (message) => socket.emit("sendMessage", message)
+  const sendVote = (game) => socket.emit("vote", game)
 
   useEffect(() => {
     // if pathname is not homepage and contains smth ( aka a code) AND a room isnt already in store (ie you've just created a room)
@@ -42,6 +43,12 @@ export default ({ children }) => {
       getRoomInfo(pathname.slice(1))
     }
   }, [pathname])
+
+  const systemMessage = (content) => ({
+    author: "system",
+    date: `${new Date().getHours()}:${new Date().getMinutes()}`,
+    content,
+  })
 
   if (!socket) {
     console.log("creating new socket connection")
@@ -68,20 +75,18 @@ export default ({ children }) => {
       history.push(`/${room.code}`)
     })
 
-    socket.on("joinRoomSuccess", (room) => {
-      dispatch(setRoom(room))
-    })
+    socket.on("joinRoomSuccess", (room) => dispatch(setRoom(room)))
 
-    socket.on("joinRoomError", (error) => {
-      dispatch(setSocketError(error))
-    })
+    socket.on("joinRoomError", (error) => dispatch(setSocketError(error)))
 
     socket.on("newUserJoined", (user) => {
       dispatch(newUserJoined(user))
+      dispatch(updateChatMessages(systemMessage(`${user.name} joined the room !`)))
     })
 
     socket.on("userLeftRoom", (user) => {
       dispatch(userLeftRoom(user))
+      dispatch(updateChatMessages(systemMessage(`${user.name} left the room !`)))
     })
 
     socket.on("leaveRoomSuccess", () => {
@@ -97,12 +102,17 @@ export default ({ children }) => {
       dispatch(updateChatMessages(message))
     })
 
+    socket.on("votes", (room) => {
+      dispatch(setRoom(room))
+    })
+
     ws = {
       socket,
       sendMessage,
       createRoom,
       leaveRoom,
       getPublicRooms,
+      sendVote,
     }
   }
 
@@ -111,13 +121,13 @@ export default ({ children }) => {
       if (isAuthenticated) {
         let userInfo = {
           username: user.username,
-          isAuthenticated: user.isAuthenticated,
+          isAuthenticated: isAuthenticated,
         }
         if (localStorage.getItem("avatar")) userInfo.avatar = localStorage.getItem("avatar")
         socket.emit("userInfo", userInfo)
       }
     }
-  }, [])
+  }, [isAuthenticated])
 
   return <WebSocketContext.Provider value={ws}>{children}</WebSocketContext.Provider>
 }

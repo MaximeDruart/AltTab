@@ -5,7 +5,7 @@ import closeSvg from "../../assets/icons/close.svg"
 
 const DisposableContainer = styled.div`
   width: 100%;
-  height: 240px;
+  height: ${(props) => (props.height ? props.height : "240px")};
   background-color: ${styles.black.medium};
   position: relative;
   border-radius: 14px;
@@ -21,6 +21,7 @@ const DisposableContainer = styled.div`
     width: 45%;
     .title {
       font-size: ${styles.txtSize.XLarge};
+      margin-bottom: 16px;
     }
     .body {
       font-size: ${styles.txtSize.small};
@@ -50,23 +51,22 @@ const DisposableContainer = styled.div`
   }
 `
 
-const DisposableHelp = ({ children }) => {
-  const [isWelcomeShown, setIsWelcomeShown] = useState(true)
+const DisposableHelp = ({ children, storageKey, height }) => {
+  const [isHelpShown, setIsHelpShown] = useState(true)
 
   useEffect(() => {
     // checks if welcome is already in local storage
-    localStorage.getItem("isWelcomeShown") !== null &&
-      setIsWelcomeShown(JSON.parse(localStorage.getItem("isWelcomeShown")))
+    localStorage.getItem(storageKey) !== null && setIsHelpShown(JSON.parse(localStorage.getItem(storageKey)))
   }, [])
 
   const hideWelcome = () => {
-    setIsWelcomeShown(false)
-    localStorage.setItem("isWelcomeShown", false)
+    setIsHelpShown(false)
+    localStorage.setItem(storageKey, false)
   }
   return (
-    isWelcomeShown && (
-      <DisposableContainer>
-        {isWelcomeShown && children}
+    isHelpShown && (
+      <DisposableContainer height={height}>
+        {children}
         <div onClick={hideWelcome} className="close">
           <img src={closeSvg} alt="" />
         </div>
