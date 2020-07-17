@@ -47,8 +47,14 @@ export default ({ children }) => {
     })
   }
 
-  const leaveRoom = (code) => socket.emit("leaveRoom", code)
-  const getRoomInfo = (code) => socket.emit("getRoomInfo", code)
+  const leaveRoom = (code) =>
+    socket.emit("leaveRoom", code, (fn) => {
+      if (fn === "success") {
+        dispatch(leftRoom())
+        history.push("/")
+      }
+    })
+
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
   const sendMessage = (message) => socket.emit("sendMessage", message)
   const sendVote = (game) => socket.emit("vote", game)
@@ -92,11 +98,6 @@ export default ({ children }) => {
     socket.on("userLeftRoom", (user) => {
       dispatch(userLeftRoom(user))
       dispatch(updateChatMessages(systemMessage(`${user.name} left the room !`)))
-    })
-
-    socket.on("leaveRoomSuccess", () => {
-      dispatch(leftRoom())
-      history.push("/")
     })
 
     socket.on("getPublicRoomsSuccess", (rooms) => {

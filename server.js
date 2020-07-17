@@ -87,8 +87,6 @@ io.on("connect", (socket) => {
   socket.on("getRoomInfo", (roomCode, fn) => {
     // if there's a room send it back, else send an error
     const answer = getRoomByCode(roomCode) ? getRoomByCode(roomCode) : { error: `no room found with code ${roomCode}` }
-    // socket.emit("getRoomInfoSuccess", answer)
-    console.log(roomCode, fn)
     fn(answer)
   })
 
@@ -114,12 +112,12 @@ io.on("connect", (socket) => {
   socket.on("getPublicRooms", () => socket.emit("getPublicRoomsSuccess", getPublicRooms()))
 
   // when user manually leaves room
-  socket.on("leaveRoom", (code) => {
+  socket.on("leaveRoom", (code, fn) => {
     const room = getRoomByCode(code)
     socket.to(room.id).emit("userLeftRoom", socket.user)
     socket.leave(room.id, (err) => {
       removeUserFromAllRooms(socket.user)
-      socket.emit("leaveRoomSuccess", "")
+      fn("success")
       filteredUnusedRooms()
       io.emit("getPublicRoomsSuccess", getPublicRooms())
     })
