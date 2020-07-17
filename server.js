@@ -74,36 +74,39 @@ io.on("connect", (socket) => {
   // then we're sending it back to the client
   socket.emit("socketData", socket.user)
 
-  socket.on("createRoom", (isPrivate) => {
+  socket.on("createRoom", (isPrivate, fn) => {
     const newRoom = createRoom(socket.user, isPrivate)
     socket.join(newRoom.id)
-    socket.emit("createRoomSuccess", newRoom)
-
     // if room is public display it in welcome page
     !isPrivate && io.emit("getPublicRoomsSuccess", getPublicRooms())
+
+    // return the room to the client
+    fn(newRoom)
   })
 
-  socket.on("getRoomInfo", (roomCode) => {
+  socket.on("getRoomInfo", (roomCode, fn) => {
     // if there's a room send it back, else send an error
     const answer = getRoomByCode(roomCode) ? getRoomByCode(roomCode) : { error: `no room found with code ${roomCode}` }
-    socket.emit("getRoomInfoSuccess", answer)
+    // socket.emit("getRoomInfoSuccess", answer)
+    console.log(roomCode, fn)
+    fn(answer)
   })
 
-  socket.on("joinRoom", (code) => {
+  socket.on("joinRoom", (code, fn) => {
     const room = getRoomByCode(code)
     if (room) {
       // updating our server state
       addUserToRoomByCode(socket.id, code)
       // place the user in the socket room so that it can broadcast and receive accordingly
       socket.join(room.id, (err) => {
-        // emitting a success event to the caller who can then safely redirect to the new url
-        socket.emit("joinRoomSuccess", room)
-        // then inform room members of the new user
+        // inform room members of the new user
         socket.to(room.id).emit("newUserJoined", socket.user)
+        // emitting a success event to the caller who can then safely redirect to the new url
+        fn(room)
       })
     } else {
       // if the room doesn't exist emit an error to caller
-      socket.emit("joinRoomError", `No room found with code ${code}`)
+      fn({ error: `No room found with code ${code}` })
     }
   })
 

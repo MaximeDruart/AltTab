@@ -28,8 +28,25 @@ export default ({ children }) => {
   const room = useSelector((state) => state.socket.room)
   const { isAuthenticated, user } = useSelector((state) => state.auth)
 
-  const createRoom = (isPrivate) => socket.emit("createRoom", isPrivate)
-  const joinRoom = (roomCode) => socket.emit("joinRoom", roomCode)
+  const createRoom = (isPrivate) => {
+    socket.emit("createRoom", isPrivate, (room) => {
+      if (room) {
+        dispatch(setRoom(room))
+        dispatch(setLeftPanel("LOBBY"))
+        history.push(`/${room.code}`)
+      }
+    })
+  }
+  const joinRoom = (roomCode) => {
+    socket.emit("joinRoom", roomCode, (res) => {
+      if (res.error) {
+        dispatch(setSocketError(res.error))
+      } else {
+        dispatch(setRoom(res))
+      }
+    })
+  }
+
   const leaveRoom = (code) => socket.emit("leaveRoom", code)
   const getRoomInfo = (code) => socket.emit("getRoomInfo", code)
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
@@ -40,7 +57,16 @@ export default ({ children }) => {
     // if pathname is not homepage and contains smth ( aka a code) AND a room isnt already in store (ie you've just created a room)
     if (pathname !== "/" && !room) {
       // send a room info request with pathname code
-      getRoomInfo(pathname.slice(1))
+      socket.emit("getRoomInfo", pathname.slice(1), (room) => {
+        if (!room.error) {
+          // if the server sends back a room, join it
+          joinRoom(room.code)
+        } else {
+          // else redirect to homepage
+          dispatch(setSocketError(room.error))
+          history.push("/")
+        }
+      })
     }
   }, [pathname])
 
@@ -57,27 +83,6 @@ export default ({ children }) => {
     socket.on("socketData", (data) => {
       dispatch(setSocketData(data))
     })
-
-    socket.on("getRoomInfoSuccess", (res) => {
-      if (!res.error) {
-        // if the server sends back a room, join it
-        joinRoom(res.code)
-      } else {
-        // else redirect to homepage
-        dispatch(setSocketError(res.error))
-        history.push("/")
-      }
-    })
-
-    socket.on("createRoomSuccess", (room) => {
-      dispatch(setRoom(room))
-      dispatch(setLeftPanel("LOBBY"))
-      history.push(`/${room.code}`)
-    })
-
-    socket.on("joinRoomSuccess", (room) => dispatch(setRoom(room)))
-
-    socket.on("joinRoomError", (error) => dispatch(setSocketError(error)))
 
     socket.on("newUserJoined", (user) => {
       dispatch(newUserJoined(user))
