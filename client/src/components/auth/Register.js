@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 
 import styled from "styled-components"
-import { LargeButton } from "../../assets/defaultStyles"
+import { Button } from "../../assets/defaultStyles"
 import { useDispatch, useSelector, shallowEqual } from "react-redux"
 import { setAuthMode, toggleAuth } from "../../redux/actions/interfaceActions"
 import { registerUser } from "../../redux/actions/authActions"
@@ -109,7 +109,9 @@ const Login = () => {
             />
           </div>
         </div>
-        <LargeButton variant={isLoading ? "disabled" : null}>Sign up</LargeButton>
+        <Button size="large" variant={isLoading ? "disabled" : null}>
+          Sign up
+        </Button>
         <div className="no-account">
           <span>already have an account ? </span>
           <span onClick={() => dispatch(setAuthMode("LOGIN"))} className="link">

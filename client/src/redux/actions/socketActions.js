@@ -2,8 +2,6 @@ export const setRoom = (payload) => ({ type: "SET_ROOM", payload })
 
 export const setSocketData = (payload) => ({ type: "SET_SOCKET_DATA", payload })
 
-export const updateRoomSettings = (payload) => ({ type: "UPDATE_ROOM_SETTINGS", payload })
-
 export const setSocketError = (payload) => ({ type: "SET_SOCKET_ERROR", payload })
 
 export const newUserJoined = (payload) => ({ type: "NEW_USER_JOINED", payload })

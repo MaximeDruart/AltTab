@@ -93,18 +93,37 @@ io.on("connect", (socket) => {
   socket.on("joinRoom", (code, fn) => {
     const room = getRoomByCode(code)
     if (room) {
-      // updating our server state
-      addUserToRoomByCode(socket.id, code)
-      // place the user in the socket room so that it can broadcast and receive accordingly
-      socket.join(room.id, (err) => {
-        // inform room members of the new user
-        socket.to(room.id).emit("newUserJoined", socket.user)
-        // emitting a success event to the caller who can then safely redirect to the new url
-        fn(room)
-      })
+      // checking if room is full
+      if (room.members.length >= room.maxMembers) {
+        fn({ error: `room ${code} is full !` })
+      } else {
+        // updating our server state
+        addUserToRoomByCode(socket.id, code)
+        // place the user in the socket room so that it can broadcast and receive accordingly
+        socket.join(room.id, (err) => {
+          // inform room members of the new user
+          socket.to(room.id).emit("newUserJoined", socket.user)
+          // if room is public update public rooms info
+          !room.private && io.emit("getPublicRoomsSuccess", getPublicRooms())
+          // emitting a success event to the caller who can then safely redirect to the new url
+          fn(room)
+        })
+      }
     } else {
       // if the room doesn't exist emit an error to caller
+      console.log("no room error")
       fn({ error: `No room found with code ${code}` })
+    }
+  })
+
+  socket.on("updateRoom", (roomCode, settings) => {
+    const room = getRoomByCode(roomCode)
+    if (room) {
+      for (const prop in settings) {
+        room[prop] = settings[prop]
+      }
+      io.to(room.id).emit("updateRoomSuccess", room)
+      !room.private && io.emit("getPublicRoomsSuccess", getPublicRooms())
     }
   })
 

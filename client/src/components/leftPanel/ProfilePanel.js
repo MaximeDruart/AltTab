@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { styles, Button, ButtonSmall } from "../../assets/defaultStyles"
+import { styles, Button } from "../../assets/defaultStyles"
 import logoutSvg from "../../assets/icons/logout.svg"
 import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth, setAuthMode } from "../../redux/actions/interfaceActions"
@@ -192,15 +192,16 @@ const Profile = () => {
             >
               Sign up
             </Button>
-            <ButtonSmall
+            <Button
               onClick={() => {
                 dispatch(setAuthMode("LOGIN"))
                 dispatch(toggleAuth())
               }}
+              size="small"
               variant="dark"
             >
               Log in
-            </ButtonSmall>
+            </Button>
           </div>
         </div>
       )}

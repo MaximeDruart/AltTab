@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import DisposableHelp from "./DisposableHelp"
-import { styles, ButtonSmall, Button } from "../../assets/defaultStyles"
+import { styles, Button } from "../../assets/defaultStyles"
 import { useMemo } from "react"
 import gamesData from "../../assets/gamesData"
 import { WebSocketContext } from "../../WebSocketContext"
@@ -72,7 +72,9 @@ const GameSelector = () => {
         <div key={index} className="game">
           <div className="header">
             <div className="votes">{room?.votes[game.name].length} votes</div>
-            <ButtonSmall onClick={() => vote(game.name)}>Vote</ButtonSmall>
+            <Button size="small" onClick={() => vote(game.name)}>
+              Vote
+            </Button>
           </div>
           <div className="body">
             <div className="game-title">{game.name}</div>
@@ -81,7 +83,7 @@ const GameSelector = () => {
           </div>
         </div>
       )),
-    [gamesData, room]
+    [room]
   )
 
   const vote = (game) => {

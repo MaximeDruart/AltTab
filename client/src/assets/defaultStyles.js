@@ -1,4 +1,7 @@
 import styled, { css } from "styled-components"
+import { motion } from "framer-motion"
+
+import React from "react"
 
 export const styles = {
   txtSize: {
@@ -34,75 +37,65 @@ export const styles = {
   `,
 }
 
-export const Button = styled.button`
+export const Button = (props) => (
+  <StyledButton {...props} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+    {props.children}
+  </StyledButton>
+)
+
+const StyledButton = styled(motion.button)`
   ${styles.boxShadowSoft};
-  border: none;
-  border-radius: 12px;
-  display: block;
-  padding: 1.2rem 2.4rem;
-  margin: 0;
-  text-decoration: none;
   color: #ffffff;
-  font-size: 28px !important;
-  cursor: pointer;
+  border-radius: 10px;
+  display: block;
+  margin: 0;
+  border: none;
+  text-decoration: none;
+  outline : none;
   text-align: center;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background: ${(props) => (props.variant === "disabled" ? "#8881ab" : "#7d63ff")};
-  pointer-events: ${(props) => (props.variant === "disabled" ? "none" : "auto")};
+  cursor: pointer;
   transition: background 0.3s ease-in-out;
-
-  &:hover,
-  &:focus {
-    /* border: 2px solid white; */
+  ${(props) => sizeVariantSwitch(props.size)}
+  background: ${(props) => backgroundVariantSwitch(props.variant)};
+  pointer-events: ${(props) => (props.variant === "disabled" ? "none" : "auto")};
+  width: ${(props) => (props.size === "large" ? "100%" : "initial")};
+  &:focus{
+    outline : none
   }
 `
 
-export const ButtonSmall = styled.button`
-  ${styles.boxShadowSoft};
-  border: none;
-  border-radius: 10px;
-  display: block;
-  padding: 0.8rem 2rem;
-  margin: 0;
-  text-decoration: none;
-  color: #ffffff;
-  font-size: 20px !important;
-  cursor: pointer;
-  text-align: center;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: ${(props) => (props.variant === "dark" ? "#463988" : "#7d63ff")};
-
-  &:hover,
-  &:focus {
-    /* border: 2px solid white; */
+const backgroundVariantSwitch = (variant) => {
+  switch (variant) {
+    case "disabled":
+      return "#8881ab"
+    case "dark":
+      return "#463988"
+    default:
+      return "#7d63ff"
   }
-`
+}
 
-export const LargeButton = styled.button`
-  ${styles.boxShadowSoft};
-  border: none;
-  border-radius: 10px;
-  display: block;
-  padding: 1rem 2rem;
-  margin: 0;
-  text-decoration: none;
-  color: #ffffff;
-  font-size: 26px !important;
-  cursor: pointer;
-  text-align: center;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: ${(props) =>
-    props.variant === "dark" ? "#463988" : props.variant === "disabled" ? "#8881ab" : "#7d63ff"};
-  width: 100%;
-
-  &:hover,
-  &:focus {
-    /* border: 2px solid white; */
+const sizeVariantSwitch = (size) => {
+  switch (size) {
+    case "small":
+      return css`
+        padding: 0.8rem 2rem;
+        font-size: 20px !important;
+      `
+    case "large":
+      return css`
+        padding: 1rem 2rem;
+        font-size: 26px !important;
+      `
+    default:
+      return css`
+        padding: 1.2rem 2.4rem;
+        font-size: 28px !important;
+      `
   }
-`
+}
 
 export const Selector = styled.div`
   display: flex;

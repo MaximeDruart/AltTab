@@ -13,6 +13,7 @@ import {
   setSocketData,
 } from "./redux/actions/socketActions"
 import { setLeftPanel } from "./redux/actions/interfaceActions"
+import debounce from "lodash.debounce"
 
 const WebSocketContext = createContext(null)
 
@@ -37,9 +38,11 @@ export default ({ children }) => {
       }
     })
   }
+
   const joinRoom = (roomCode) => {
     socket.emit("joinRoom", roomCode, (res) => {
       if (res.error) {
+        history.push("/")
         dispatch(setSocketError(res.error))
       } else {
         dispatch(setRoom(res))
@@ -48,8 +51,8 @@ export default ({ children }) => {
   }
 
   const leaveRoom = (code) =>
-    socket.emit("leaveRoom", code, (fn) => {
-      if (fn === "success") {
+    socket.emit("leaveRoom", code, (res) => {
+      if (res === "success") {
         dispatch(leftRoom())
         history.push("/")
       }
@@ -58,6 +61,10 @@ export default ({ children }) => {
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
   const sendMessage = (message) => socket.emit("sendMessage", message)
   const sendVote = (game) => socket.emit("vote", game)
+  const updateRoomSettings = (roomCode, settings) => {
+    socket.emit("updateRoom", roomCode, settings)
+  }
+  const debouncedUpdateRoomSettings = debounce(updateRoomSettings, 600)
 
   useEffect(() => {
     // if pathname is not homepage and contains smth ( aka a code) AND a room isnt already in store (ie you've just created a room)
@@ -112,6 +119,10 @@ export default ({ children }) => {
       dispatch(setRoom(room))
     })
 
+    socket.on("updateRoomSuccess", (room) => {
+      dispatch(setRoom(room))
+    })
+
     ws = {
       socket,
       sendMessage,
@@ -119,6 +130,8 @@ export default ({ children }) => {
       leaveRoom,
       getPublicRooms,
       sendVote,
+      updateRoomSettings,
+      debouncedUpdateRoomSettings,
     }
   }
 

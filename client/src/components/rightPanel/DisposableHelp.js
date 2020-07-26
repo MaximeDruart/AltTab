@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react"
 import { styles } from "../../assets/defaultStyles"
 import styled from "styled-components"
 import closeSvg from "../../assets/icons/close.svg"
+import { motion, AnimatePresence, useAnimation } from "framer-motion"
 
-const DisposableContainer = styled.div`
+const DisposableContainer = styled(motion.div)`
   width: 100%;
-  height: ${(props) => (props.height ? props.height : "240px")};
+  /* height: ${(props) => (props.height ? props.height : "240px")}; */
   background-color: ${styles.black.medium};
   position: relative;
   border-radius: 14px;
@@ -52,26 +53,40 @@ const DisposableContainer = styled.div`
 `
 
 const DisposableHelp = ({ children, storageKey, height }) => {
-  const [isHelpShown, setIsHelpShown] = useState(true)
+  const [isHelpShown, setIsHelpShown] = useState(false)
 
   useEffect(() => {
     // checks if welcome is already in local storage
-    localStorage.getItem(storageKey) !== null && setIsHelpShown(JSON.parse(localStorage.getItem(storageKey)))
+    if (localStorage.getItem(storageKey) === null) {
+      setIsHelpShown(true)
+    } else {
+      setIsHelpShown(JSON.parse(localStorage.getItem(storageKey)))
+    }
   }, [])
 
   const hideWelcome = () => {
     setIsHelpShown(false)
     localStorage.setItem(storageKey, false)
   }
+
   return (
-    isHelpShown && (
-      <DisposableContainer height={height}>
-        {children}
-        <div onClick={hideWelcome} className="close">
-          <img src={closeSvg} alt="" />
-        </div>
-      </DisposableContainer>
-    )
+    <AnimatePresence>
+      {isHelpShown && (
+        <DisposableContainer
+          layout
+          initial={{ scale: 0, opacity: 0, height: 0, marginBottom: 0 }}
+          animate={{ scale: 1, opacity: 1, height: height || "240px", marginBottom: 35, transition: { delay: 0.6 } }}
+          exit={{ scale: 0, opacity: 0, height: 0, marginBottom: 0 }}
+          key="modal"
+          height={height}
+        >
+          {children}
+          <motion.div whileHover={{ scale: 1.09, rotate: -5 }} onClick={hideWelcome} className="close">
+            <img src={closeSvg} alt="" />
+          </motion.div>
+        </DisposableContainer>
+      )}
+    </AnimatePresence>
   )
 }
 

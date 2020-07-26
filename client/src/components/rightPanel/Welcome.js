@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from "react"
 import styled from "styled-components"
-import { styles, Button, ButtonSmall, Selector } from "../../assets/defaultStyles"
+import { styles, Button, Selector } from "../../assets/defaultStyles"
 import DisposableHelp from "./DisposableHelp"
 import gamesData from "../../assets/gamesData"
 import { useMemo } from "react"
 import { WebSocketContext } from "../../WebSocketContext"
 import { useSelector } from "react-redux"
 import { useHistory } from "react-router-dom"
+import { motion, AnimatePresence } from "framer-motion"
 
 const WelcomeContainer = styled.div`
   width: 94%;
@@ -139,13 +140,22 @@ const Welcome = () => {
   const mappedServers = useMemo(
     () =>
       publicRooms.map((room, index) => (
-        <div key={index} className="server">
+        <div
+          positionTransition
+          initial={{ opacity: 0, scale: 0.3 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+          key={index}
+          className="server"
+        >
           <div className="name">{room.name}</div>
           <div className="game">game playing</div>
           <div className="players">
             {room.members.length}/{room.maxMembers}
           </div>
-          <ButtonSmall onClick={() => history.push(room.code)}>Join</ButtonSmall>
+          <Button size="small" onClick={() => history.push(room.code)}>
+            Join
+          </Button>
         </div>
       )),
     [publicRooms, history]
@@ -214,9 +224,31 @@ const Welcome = () => {
         <div className="label">Browse servers</div>
         <div className="servers">
           {publicRooms.length ? (
-            mappedServers
+            <AnimatePresence>
+              {publicRooms.map((room, index) => (
+                <motion.div
+                  positionTransition
+                  initial={{ opacity: 0, scale: 0.3 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+                  key={index}
+                  className="server"
+                >
+                  <div className="name">{room.name}</div>
+                  <div className="game">game playing</div>
+                  <div className="players">
+                    {room.members.length}/{room.maxMembers}
+                  </div>
+                  <Button size="small" onClick={() => history.push(room.code)}>
+                    Join
+                  </Button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           ) : (
-            <div className="no-server">No public servers found. Create your own !</div>
+            <div key="no-server" className="no-server">
+              No public servers found. Create your own !
+            </div>
           )}
         </div>
       </div>

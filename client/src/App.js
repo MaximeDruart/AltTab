@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux"
 import AuthPopup from "./components/auth"
 import { loadUser } from "./redux/actions/authActions"
 import Alert from "./components/Alert"
+import { AnimatePresence } from "framer-motion"
 
 const AppContainer = styled.div`
   width: 100vw;
@@ -31,7 +32,7 @@ const App = () => {
       <Nav />
       <LeftPanel />
       <RightPanel />
-      {showAuth && <AuthPopup />}
+      <AnimatePresence>{showAuth && <AuthPopup key="auth" />}</AnimatePresence>
     </AppContainer>
   )
 }

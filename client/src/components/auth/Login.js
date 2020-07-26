@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 
 import styled from "styled-components"
-import { LargeButton, styles } from "../../assets/defaultStyles"
+import { Button, styles } from "../../assets/defaultStyles"
 import { useDispatch, useSelector } from "react-redux"
 import { setAuthMode, toggleAuth } from "../../redux/actions/interfaceActions"
 import { clearErrors } from "../../redux/actions/errorActions"
@@ -87,7 +87,7 @@ const Login = () => {
             <span className="forgot">forgot your password ? (coming soon :) )</span>
           </div>
         </div>
-        <LargeButton>Log in</LargeButton>
+        <Button size="large">Log in</Button>
         <div className="no-account">
           <span>don't have an account ? </span>
           <span onClick={() => dispatch(setAuthMode("REGISTER"))} className="link">

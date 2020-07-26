@@ -1,15 +1,14 @@
-import React, { useContext } from "react"
+import React, { useContext, useState, useEffect } from "react"
 import styled from "styled-components"
 import { styles, Selector } from "../../assets/defaultStyles"
 import { useSelector, useDispatch } from "react-redux"
 import settingsSvg from "../../assets/icons/settings.svg"
 import profileSvg from "../../assets/icons/profile.svg"
+import crownSvg from "../../assets/icons/crown.svg"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import { setLeftPanelMode } from "../../redux/actions/interfaceActions"
-import { updateRoomSettings } from "../../redux/actions/socketActions"
 import Avatar from "./Avatar"
-
 import ChatPanel from "./ChatPanel"
 import { WebSocketContext } from "../../WebSocketContext"
 
@@ -59,6 +58,19 @@ const LobbyContainer = styled.div`
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        .room-name-input {
+          width: 100%;
+          border: none;
+          height: 30px;
+          padding-left: 7px;
+          background-color: inherit;
+          margin: 0 auto;
+          font-size: ${styles.txtSize.medium};
+          &:focus {
+            border: none;
+            outline: none;
+          }
+        }
         p {
           /* fuck it */
           font-family: NexaBold;
@@ -175,6 +187,7 @@ const PlayerContainer = styled.div`
       position: relative;
       top: -20%;
     }
+    z-index: 10;
   }
   .name-tag {
     display: flex;
@@ -183,6 +196,15 @@ const PlayerContainer = styled.div`
     width: 298px;
     background-color: ${styles.black.light};
     border-radius: 10px;
+    position: relative;
+
+    .crown {
+      position: absolute;
+      top: -28%;
+      right: -4%;
+      transform: rotate(30deg);
+      z-index: 10;
+    }
 
     span {
       padding-left: 75px;
@@ -197,17 +219,23 @@ const PlayerContainer = styled.div`
 const LobbyPanel = () => {
   const ws = useContext(WebSocketContext)
   const leftPanelMode = useSelector((state) => state.interface.leftPanelMode)
-  const { room } = useSelector((state) => state.socket)
+  const { room, socketData } = useSelector((state) => state.socket)
   const dispatch = useDispatch()
+
+  const [roomName, setRoomName] = useState(room?.name)
 
   const getPlayers = () => {
     return room.members.map((member, index) => (
       <PlayerContainer index={index} key={index}>
-        {member.id === room.ownerId && <div className="crown"></div>}
         <div className="picture">
           <Avatar optionProps={member.avatar} />
         </div>
         <div className="name-tag">
+          {member.id === room.ownerId && (
+            <div className="crown">
+              <img src={crownSvg} alt="" />
+            </div>
+          )}
           <span>{member.name}</span>
         </div>
       </PlayerContainer>
@@ -215,8 +243,17 @@ const LobbyPanel = () => {
   }
 
   const toggleLeftPanelMode = () => {
-    if (leftPanelMode === "USERS") return dispatch(setLeftPanelMode("SETTINGS"))
-    if (leftPanelMode === "SETTINGS") return dispatch(setLeftPanelMode("USERS"))
+    if (leftPanelMode === "USERS") dispatch(setLeftPanelMode("SETTINGS"))
+    if (leftPanelMode === "SETTINGS") dispatch(setLeftPanelMode("USERS"))
+  }
+
+  useEffect(() => setRoomName(room?.name), [room?.name])
+
+  const onChangeHandler = ({ target }) => {
+    setRoomName(target.value)
+    ws.debouncedUpdateRoomSettings(room.code, {
+      name: target.value,
+    })
   }
 
   return (
@@ -225,7 +262,11 @@ const LobbyPanel = () => {
         <div className="lobby">
           <div className="lobby-header">
             <div className="lobby-name">
-              <p>{room.name}</p>
+              {leftPanelMode === "SETTINGS" && room?.ownerId === socketData?.id ? (
+                <input value={roomName} onChange={onChangeHandler} className="room-name-input" type="text" />
+              ) : (
+                <p>{room.name}</p>
+              )}
             </div>
             <div onClick={toggleLeftPanelMode} className="settings">
               <img src={leftPanelMode === "USERS" ? settingsSvg : profileSvg} alt="" />
@@ -237,13 +278,13 @@ const LobbyPanel = () => {
                 <div className="label">Lobby privacy</div>
                 <Selector>
                   <div
-                    onClick={() => room.private && dispatch(updateRoomSettings({ private: false }))}
+                    onClick={() => room.private && ws.updateRoomSettings({ private: false })}
                     className={room.private ? "left" : "left active"}
                   >
                     Public
                   </div>
                   <div
-                    onClick={() => !room.private && dispatch(updateRoomSettings({ private: true }))}
+                    onClick={() => !room.private && ws.updateRoomSettings({ private: true })}
                     className={room.private ? "right active" : "right"}
                   >
                     Private
@@ -262,7 +303,7 @@ const LobbyPanel = () => {
                   <span className="prefix">alttab.com/</span>
                   <input
                     value={room.code}
-                    onChange={({ target }) => dispatch(updateRoomSettings({ code: target.value.slice(0, 4) }))}
+                    onChange={({ target }) => ws.updateRoomSettings({ code: target.value.slice(0, 4) })}
                     type="text"
                   />
                 </div>
