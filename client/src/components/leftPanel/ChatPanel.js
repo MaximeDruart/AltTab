@@ -58,6 +58,7 @@ const ChatPanel = () => {
   const chatMessages = useSelector((state) => state.socket.chatMessages)
   const ws = useContext(WebSocketContext)
   const [input, setInput] = useState("")
+
   const getMessages = () =>
     chatMessages.map((msg, index) => (
       <div key={index} className="message">
@@ -65,13 +66,16 @@ const ChatPanel = () => {
           <span className="date">{msg.date}</span>
           <span className="author">{msg.author}</span>
         </div>
-        <div className={"content"}>{msg.content}</div>
+        <div className="content">{msg.content}</div>
       </div>
     ))
+
   const sendMsg = (e) => {
     e.preventDefault()
-    ws.sendMessage(input)
-    setInput("")
+    if (input.length) {
+      ws.sendMessage(input)
+      setInput("")
+    }
   }
 
   const onChangeHandler = ({ target }) => {

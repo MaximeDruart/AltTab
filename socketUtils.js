@@ -45,7 +45,7 @@ const createRoom = (user, isPrivate) => {
     members: [user],
     private: isPrivate,
     code: generateCode(),
-    maxMembers: 2,
+    maxMembers: 6,
     votes: {
       Lighty: [],
       Gummy: [],

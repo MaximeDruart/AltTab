@@ -11,6 +11,7 @@ import { setLeftPanelMode } from "../../redux/actions/interfaceActions"
 import Avatar from "./Avatar"
 import ChatPanel from "./ChatPanel"
 import { WebSocketContext } from "../../WebSocketContext"
+import { AnimatePresence, motion } from "framer-motion"
 
 const LobbyContainer = styled.div`
   width: 100%;
@@ -167,7 +168,7 @@ const LobbyContainer = styled.div`
   }
 `
 
-const PlayerContainer = styled.div`
+const PlayerContainer = styled(motion.li)`
   width: 100%;
   position: relative;
   margin-bottom: 22px;
@@ -223,24 +224,6 @@ const LobbyPanel = () => {
   const dispatch = useDispatch()
 
   const [roomName, setRoomName] = useState(room?.name)
-
-  const getPlayers = () => {
-    return room.members.map((member, index) => (
-      <PlayerContainer index={index} key={index}>
-        <div className="picture">
-          <Avatar optionProps={member.avatar} />
-        </div>
-        <div className="name-tag">
-          {member.id === room.ownerId && (
-            <div className="crown">
-              <img src={crownSvg} alt="" />
-            </div>
-          )}
-          <span>{member.name}</span>
-        </div>
-      </PlayerContainer>
-    ))
-  }
 
   const toggleLeftPanelMode = () => {
     if (leftPanelMode === "USERS") dispatch(setLeftPanelMode("SETTINGS"))
@@ -310,16 +293,39 @@ const LobbyPanel = () => {
               </div>
             </div>
           ) : (
-            <div className="lobby-players">
+            <ul className="lobby-players">
               <PerfectScrollbar
                 options={{
                   wheelSpeed: 0.15,
                   suppressScrollX: true,
                 }}
               >
-                {getPlayers()}
+                <AnimatePresence initial={false}>
+                  {room.members.map((member, index) => (
+                    <PlayerContainer
+                      key={index}
+                      positionTransition
+                      initial={{ opacity: 0, scale: 0.3 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+                      index={index}
+                    >
+                      <div className="picture">
+                        <Avatar optionProps={member.avatar} />
+                      </div>
+                      <div className="name-tag">
+                        {member.id === room.ownerId && (
+                          <div className="crown">
+                            <img src={crownSvg} alt="" />
+                          </div>
+                        )}
+                        <span>{member.name}</span>
+                      </div>
+                    </PlayerContainer>
+                  ))}
+                </AnimatePresence>
               </PerfectScrollbar>
-            </div>
+            </ul>
           )}
           <div className="options">
             <button onClick={() => ws.leaveRoom(room.code)} className="leave">
