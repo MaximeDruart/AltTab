@@ -98,7 +98,22 @@ const GameSelector = () => {
         </div>
         <div className="chammy">Chammy :)</div>
       </DisposableHelp>
-      <div className="game-selector">{mappedGames}</div>
+      <div className="game-selector">
+        {mappedGames}
+        <div className="game">
+          <div className="header">
+            <div className="votes">{room?.votes["random"].length} votes</div>
+            <Button size="small" onClick={() => vote("random")}>
+              Vote
+            </Button>
+          </div>
+          <div className="body">
+            <div className="game-title">{"Random"}</div>
+            <div className="toggle-desc">Read more</div>
+            <Button>Play</Button>
+          </div>
+        </div>
+      </div>
     </GameSelectorContainer>
   )
 }

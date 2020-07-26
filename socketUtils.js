@@ -50,6 +50,7 @@ const createRoom = (user, isPrivate) => {
       Lighty: [],
       Gummy: [],
       Ballzy: [],
+      random: [],
     },
   }
   rooms.push(room)

@@ -18,6 +18,7 @@ const AlertContainer = styled.div`
   height: 60px;
   background-color: ${styles.red};
   border-radius: 12px;
+  box-shadow: ${styles.boxShadowHard};
   .message {
     color: white;
     position: absolute;
@@ -34,6 +35,15 @@ const AlertContainer = styled.div`
     top: 50%;
     transform: translateY(-50%);
     right: 20px;
+    background: ${styles.txtColor1};
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    box-shadow: ${styles.boxShadowHard};
+    transition: transform 0.3s ease;
+    &:hover {
+      transform: scale(1.05) rotate(-5deg) translateY(-50%);
+    }
   }
 `
 
@@ -59,7 +69,12 @@ const Alert = () => {
     <AlertContainer show={socketError}>
       <div className="message">{socketError}</div>
       <div onClick={dismiss} className="dismiss">
-        <img src={closeSvg} alt="" />
+        <svg width="12" height="12" viewBox="0 0 17 16">
+          <path
+            d="M16.1403 2.61865L10.7155 7.9743L16.0653 13.3776L13.6533 15.7896L8.29571 10.3628L2.87417 15.7145L0.482422 13.3228L5.91114 7.9469L0.557449 2.5234L2.94919 0.131656L8.32311 5.55842L13.7283 0.206683L16.1403 2.61865Z"
+            fill={styles.red}
+          />
+        </svg>
       </div>
     </AlertContainer>
   )
