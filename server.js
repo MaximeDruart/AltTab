@@ -27,21 +27,6 @@ mongoose
 const usersRouter = require("./routes/users")
 app.use("/users", usersRouter)
 
-// for heroku prod
-if (process.env.NODE_ENV === "production") {
-  // Set static folder
-  app.use(express.static("client/build"))
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
-  })
-}
-
-server.listen(PORT, () => console.log(`listening on port ${PORT}`))
-
-// exporting server so socket logic can be in another file
-module.exports = server
-
 // SOCKET
 
 const {
@@ -173,3 +158,15 @@ io.on("connect", (socket) => {
     io.to(room.id).emit("votes", room)
   })
 })
+
+// for heroku prod
+if (process.env.NODE_ENV === "production") {
+  // Set static folder
+  app.use(express.static("client/build"))
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
+  })
+}
+
+server.listen(PORT, () => console.log(`listening on port ${PORT}`))

@@ -90,8 +90,10 @@ export default ({ children }) => {
   })
 
   if (!socket) {
-    console.log("creating new socket connection")
-    socket = io.connect("http://localhost:3001")
+    socket =
+      process.env.NODE_ENV === "development"
+        ? io.connect("http://localhost:3001")
+        : io.connect(window.location.pathname)
 
     socket.on("socketData", (data) => {
       dispatch(setSocketData(data))
