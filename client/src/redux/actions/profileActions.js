@@ -1,10 +1,11 @@
 import axios from "axios"
 import { tokenConfig } from "./authActions"
+import { returnErrors } from "./errorActions"
 
-export const editUsername = (username) => (dispatch, getState) => {
+export const editAvatar = (avatar) => (dispatch, getState) => {
   dispatch({ type: "SET_LOADING" })
   axios
-    .post("/users/edit/username", { username }, tokenConfig(getState))
+    .post("/users/edit/avatar", { avatar }, tokenConfig(getState))
     .then((res) => {
       dispatch({
         type: "EDIT_SUCCESS",
@@ -12,7 +13,7 @@ export const editUsername = (username) => (dispatch, getState) => {
       })
     })
     .catch((error) => {
-      dispatch(returnErrors(error.response.data, error.response.status, "EDIT_FAIL"))
+      dispatch(returnErrors(error.response.data, error.response.status))
       dispatch({ type: "EDIT_FAIL" })
     })
 }

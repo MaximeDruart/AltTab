@@ -41,7 +41,7 @@ const {
   userIsInRoom,
   getUserRoom,
   addVote,
-} = require("./socketUtils")
+} = require("./utils/socket")
 
 const io = require("socket.io")(server)
 io.on("connect", (socket) => {

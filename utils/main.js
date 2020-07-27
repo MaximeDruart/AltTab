@@ -1,10 +1,3 @@
-import React, { useState, useEffect, useCallback } from "react"
-import Avatar from "avataaars"
-import resetSvg from "../../assets/icons/reset.svg"
-import { useSelector, useDispatch } from "react-redux"
-import { editAvatar } from "../../redux/actions/profileActions"
-import debounce from "lodash.debounce"
-
 const avatarOptions = {
   avatarStyle: ["Circle"],
   topType: [
@@ -114,42 +107,14 @@ const avatarOptions = {
   skinColor: ["Tanned", "Yellow", "Pale", "Light", "Brown", "DarkBrown", "Black"],
 }
 
-const randomOptions = () => {
+const getRandomAvatarOptions = (isStringified = false) => {
   let options = {}
   for (const prop in avatarOptions) {
     options[prop] = avatarOptions[prop][Math.floor(Math.random() * avatarOptions[prop].length)]
   }
-  return options
+  return !isStringified ? options : JSON.stringify(options)
 }
 
-const RandomAvatar = ({ enableChange, optionProps }) => {
-  const dispatch = useDispatch()
-  const { user, isAuthenticated } = useSelector((state) => state.auth)
-  const [options, setOptions] = useState(optionProps || user.avatar)
-
-  // first create a debounced function that dispatch the edit action
-  const debouncedEditAvatar = debounce((options) => {
-    dispatch(editAvatar(options))
-  }, 1000)
-  // then memoize so it's not redefined on each rerender which would cause the debounce timer to reset
-  const memoUpdateAvatar = useCallback(debouncedEditAvatar, [])
-
-  const updateOptions = () => {
-    const newOptions = randomOptions()
-    setOptions(newOptions)
-    if (isAuthenticated) memoUpdateAvatar(newOptions)
-  }
-
-  return (
-    <>
-      <Avatar {...options} />
-      {enableChange && (
-        <div onClick={updateOptions} className="change">
-          <img src={resetSvg} alt="" />
-        </div>
-      )}
-    </>
-  )
+module.exports = {
+  getRandomAvatarOptions,
 }
-
-export default RandomAvatar

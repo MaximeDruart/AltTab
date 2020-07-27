@@ -7,6 +7,7 @@ const validateRegisterInput = require("../validation/register")
 const validateLoginInput = require("../validation/login")
 
 let User = require("../models/user.model")
+const { getRandomAvatarOptions } = require("../utils/main")
 
 router.post("/find/id", (req, res) => {
   User.findById(req.body.id)
@@ -41,6 +42,25 @@ router.post("/edit/username", auth, (req, res) => {
     .catch((error) => res.status(404).json(err))
 })
 
+// @route POST users/edit/avatar
+// @desc edits avatar
+// @access Private
+
+router.post("/edit/avatar", auth, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.user.id, { avatar: req.body.avatar })
+    // findByIdAndUpdate actually sends back the matched document not the one after edit so i'm sending it with avatar as sent in request body
+    return res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      avatar: req.body.avatar,
+    })
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+})
+
 // @route POST users/register
 // @desc authenticate user
 // @access Public
@@ -63,6 +83,7 @@ router.post("/register", (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
+      avatar: getRandomAvatarOptions(),
     })
 
     // hash the password
@@ -84,6 +105,7 @@ router.post("/register", (req, res) => {
                   id: user.id,
                   username: user.username,
                   email: user.email,
+                  avatar: user.avatar,
                 },
               })
             })
@@ -121,6 +143,7 @@ router.post("/login", (req, res) => {
             id: user.id,
             username: user.username,
             email: user.email,
+            avatar: user.avatar,
           },
         })
       })
@@ -134,7 +157,14 @@ router.post("/login", (req, res) => {
 router.get("/info", auth, (req, res) => {
   User.findById(req.user.id)
     .select("-password")
-    .then((user) => res.json(user))
+    .then((user) => {
+      return res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+      })
+    })
 })
 
 module.exports = router

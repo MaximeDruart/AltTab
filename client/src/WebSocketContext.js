@@ -133,14 +133,22 @@ export default ({ children }) => {
 
   useEffect(() => {
     if (socket) {
+      // if user is authenticated send that data to the socket server
       if (isAuthenticated) {
-        let userInfo = {
+        socket.emit("userInfo", {
           username: user.username,
           isAuthenticated: isAuthenticated,
-        }
-        if (localStorage.getItem("avatar")) userInfo.avatar = localStorage.getItem("avatar")
-        socket.emit("userInfo", userInfo)
+          avatar: user.avatar,
+        })
+        // if user is a guest but has already come he's gonna have infos on localStorage
       }
+      // else if (localStorage.getItem("userInfo")) {
+      //   socket.emit("userInfo", {
+      //     username: user.username,
+      //     isAuthenticated: false,
+      //     avatar: user.avatar,
+      //   })
+      // }
     }
   }, [isAuthenticated])
 
