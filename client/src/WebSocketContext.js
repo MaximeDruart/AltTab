@@ -67,11 +67,12 @@ export default ({ children }) => {
   const debouncedUpdateRoomSettings = debounce(updateRoomSettings, 600)
 
   useEffect(() => {
+    console.log(pathname)
     // if pathname is not homepage and contains smth ( aka a code) AND a room isnt already in store (ie you've just created a room)
     if (pathname !== "/" && !room) {
       // send a room info request with pathname code
       socket.emit("getRoomInfo", pathname.slice(1), (room) => {
-        console.log("room")
+        console.log(room)
         if (!room.error) {
           // if the server sends back a room, join it
           joinRoom(room.code)
