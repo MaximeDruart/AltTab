@@ -71,6 +71,7 @@ export default ({ children }) => {
     if (pathname !== "/" && !room) {
       // send a room info request with pathname code
       socket.emit("getRoomInfo", pathname.slice(1), (room) => {
+        console.log("room")
         if (!room.error) {
           // if the server sends back a room, join it
           joinRoom(room.code)
@@ -109,21 +110,13 @@ export default ({ children }) => {
       dispatch(updateChatMessages(systemMessage(`${user.name} left the room !`)))
     })
 
-    socket.on("getPublicRoomsSuccess", (rooms) => {
-      dispatch(setPublicRooms(rooms))
-    })
+    socket.on("getPublicRoomsSuccess", (rooms) => dispatch(setPublicRooms(rooms)))
 
-    socket.on("receiveMessage", (message) => {
-      dispatch(updateChatMessages(message))
-    })
+    socket.on("receiveMessage", (message) => dispatch(updateChatMessages(message)))
 
-    socket.on("votes", (room) => {
-      dispatch(setRoom(room))
-    })
+    socket.on("votes", (room) => dispatch(setRoom(room)))
 
-    socket.on("updateRoomSuccess", (room) => {
-      dispatch(setRoom(room))
-    })
+    socket.on("updateRoomSuccess", (room) => dispatch(setRoom(room)))
 
     ws = {
       socket,

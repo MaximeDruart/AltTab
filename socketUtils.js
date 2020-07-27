@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid")
 const axios = require("axios")
+const { uniqueNamesGenerator, adjectives, colors, animals } = require("unique-names-generator")
 let users = []
 let rooms = []
 
@@ -17,19 +18,15 @@ const createUser = (socket) => {
   let user = {
     id: socket.id,
     avatar: getRandomAvatarOptions(),
-    name: "Temp name " + socket.id.slice(0, 2),
+    name: randomName(),
   }
   socket.user = user
   users.push(user)
 }
 
 const randomName = () => {
-  axios
-    .get("http://names.drycodes.com/1?nameOptions=funnyWords&separator=space")
-    .then((res) => {
-      res.data[0]
-    })
-    .catch((err) => {})
+  let tempName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: " " })
+  return tempName.charAt(0).toUpperCase() + tempName.slice(1)
 }
 
 const removeUser = (socketId) => {

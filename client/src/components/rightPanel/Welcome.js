@@ -137,29 +137,6 @@ const Welcome = () => {
       )),
     []
   )
-  const mappedServers = useMemo(
-    () =>
-      publicRooms.map((room, index) => (
-        <div
-          positionTransition
-          initial={{ opacity: 0, scale: 0.3 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-          key={index}
-          className="server"
-        >
-          <div className="name">{room.name}</div>
-          <div className="game">game playing</div>
-          <div className="players">
-            {room.members.length}/{room.maxMembers}
-          </div>
-          <Button size="small" onClick={() => history.push(room.code)}>
-            Join
-          </Button>
-        </div>
-      )),
-    [publicRooms, history]
-  )
 
   useEffect(() => {
     ws.getPublicRooms()

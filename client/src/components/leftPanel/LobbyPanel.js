@@ -90,6 +90,12 @@ const LobbyContainer = styled.div`
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        img {
+          transition: transform 0.3s ease;
+        }
+        &:hover img {
+          transform: scale(1.15);
+        }
       }
     }
     .lobby-players {

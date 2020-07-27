@@ -38,7 +38,7 @@ export const styles = {
 }
 
 export const Button = (props) => (
-  <StyledButton {...props} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+  <StyledButton {...props} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
     {props.children}
   </StyledButton>
 )
@@ -107,17 +107,21 @@ export const Selector = styled.div`
     justify-content: center;
     align-items: center;
     width: 150px;
-    height: 35px;
+    height: 50px;
     background-color: #1b1b26;
     color: #bebebe;
-    border: thin solid 272732;
+    border: thin solid #272732;
     cursor: pointer;
+    transition: all 0.15s ease-in;
     &.active {
       background-color: #272732;
       border: 1px solid #7d63ff;
       z-index: 10;
       color: #e2e2e2;
       cursor: default;
+    }
+    &:hover {
+      background-color: #272732;
     }
   }
   .left {
