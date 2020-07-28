@@ -25,6 +25,7 @@ const AvatarContainer = styled.div`
 `
 
 const AvatarItem = ({ item, buy, equip }) => {
+  const itemTyped = { ...item, type: "avatar" }
   return (
     <AvatarContainer>
       <div className="shop-avatar">
@@ -37,7 +38,7 @@ const AvatarItem = ({ item, buy, equip }) => {
       </div>
       <div className="price">{item.price}</div>
       <div className="actions">
-        <Button size="small" onClick={buy}>
+        <Button size="small" onClick={() => buy(itemTyped)}>
           buy
         </Button>
       </div>

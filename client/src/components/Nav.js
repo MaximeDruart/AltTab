@@ -23,6 +23,11 @@ const NavContainer = styled.div`
       margin-bottom: 50px;
       background: ${styles.blue};
       border-radius: 8%;
+      a {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
   .lower-nav {
@@ -70,11 +75,12 @@ const NavContainer = styled.div`
 const Nav = () => {
   const dispatch = useDispatch()
   const activeLeftPanel = useSelector((state) => state.interface.activeLeftPanel)
+  const room = useSelector((state) => state.socket.room)
   return (
     <NavContainer>
       <ul className="upper-nav">
         <li className="upper-nav-item">
-          <NavLink to="/">
+          <NavLink to={room ? `/${room.code}` : "/"}>
             <img src="" alt="" />
           </NavLink>
         </li>

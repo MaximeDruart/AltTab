@@ -139,11 +139,33 @@ const GameSelector = () => {
       </DisposableHelp>
       <div className="game-selector">
         {mappedGames}
-        <div className="game">
+        <div className="game random">
           <div className="header">
             <div className="votes">{room?.votes["random"].length} votes</div>
-            <Button size="small" onClick={() => vote("random")}>
-              Vote
+            <Button variant={isGameUserVotedFor("random") && "dark"} size="small" onClick={() => vote("random")}>
+              <AnimatePresence>
+                {isGameUserVotedFor("random") ? (
+                  <>
+                    <motion.svg
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      style={{ marginRight: "5px" }}
+                      width="16"
+                      height="12"
+                      viewBox="0 0 16 12"
+                    >
+                      <path
+                        d="M5.50013 8.81667L2.02513 5.34167L0.841797 6.51667L5.50013 11.175L15.5001 1.175L14.3251 0L5.50013 8.81667Z"
+                        fill="white"
+                      />
+                    </motion.svg>
+                    <span>Voted</span>
+                  </>
+                ) : (
+                  <span>Vote</span>
+                )}
+              </AnimatePresence>
             </Button>
           </div>
           <div className="body">

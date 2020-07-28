@@ -23,7 +23,7 @@ let socket
 let ws
 
 // routes excluded from being tested as a room name
-const usedRoutes = ["/", "/shop"]
+const usedRoutes = ["/", "/shop", "/blog"]
 
 export default ({ children }) => {
   const { pathname } = useLocation()

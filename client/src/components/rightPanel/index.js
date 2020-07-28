@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom"
 import Welcome from "./Welcome"
 import GameSelector from "./GameSelector"
 import Shop from "./shop"
+import Blog from "./Blog"
 
 const RightPanelContainer = styled.div`
   width: 100%;
@@ -25,6 +26,7 @@ const RightPanel = () => {
         {/* else every other route will match with the other route */}
         <Route exact path="/" component={Welcome}></Route>
         <Route exact path="/shop" component={Shop}></Route>
+        <Route exact path="/blog" component={Blog}></Route>
         <Route path="/" component={GameSelector}></Route>
       </Switch>
     </RightPanelContainer>

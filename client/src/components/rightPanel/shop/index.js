@@ -3,7 +3,9 @@ import styled from "styled-components"
 import shopData from "./data.json"
 import Field from "./Field"
 import AvatarItem from "./AvatarItem"
-import { styles, Button } from "../../../assets/defaultStyles"
+import ConfirmBuy from "./ConfirmBuy"
+import { styles } from "../../../assets/defaultStyles"
+import { AnimatePresence } from "framer-motion"
 
 const ShopContainer = styled.div`
   width: 94%;
@@ -43,13 +45,22 @@ const ShopContainer = styled.div`
 `
 
 const Shop = () => {
+  const [[showConfirm, confirmItem], setShowConfirm] = useState([false, null])
   const [showOwned, setShowOwned] = useState(true)
   const [listType, setListType] = useState("SQUARE") // is "SQUARE" or "LIST"
   const [showSale, setShowSale] = useState(true)
   const equipAvatar = (avatar) => {}
-  const buyAvatar = (avatar) => {}
+  const buyAvatar = (avatar) => {
+    setShowConfirm([true, avatar])
+  }
+  const hideConfirm = () => {
+    setShowConfirm([false, null])
+  }
   return (
     <ShopContainer>
+      <AnimatePresence exitBeforeEnter={true}>
+        {showConfirm && <ConfirmBuy item={confirmItem} hide={hideConfirm} />}
+      </AnimatePresence>
       <div className="shop-options">
         <div className="list-type">
           <svg onClick={() => setListType("LIST")} width="22" height="23" viewBox="0 0 22 23">
