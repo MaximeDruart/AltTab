@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useCallback } from "react"
 import styled from "styled-components"
 import DisposableHelp from "./DisposableHelp"
 import { styles, Button } from "../../assets/defaultStyles"
@@ -6,7 +6,7 @@ import { useMemo } from "react"
 import gamesData from "../../assets/gamesData"
 import { WebSocketContext } from "../../WebSocketContext"
 import { useSelector } from "react-redux"
-import { AnimatePresence, motion, useAnimation } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 
 const GameSelectorContainer = styled.div`
   width: 94%;
@@ -76,10 +76,18 @@ const GameSelector = () => {
   const room = useSelector((state) => state.socket.room)
   const socketData = useSelector((state) => state.socket.socketData)
 
-  const onVoteAnim = useAnimation()
-
   /* check if the user voted for this game and add a checkmark if so */
-  const isGameUserVotedFor = (gameName) => !!room?.votes[gameName].filter((vote) => vote.id === socketData.id).length
+  const isGameUserVotedFor = useCallback(
+    (gameName) => !!room?.votes[gameName].filter((vote) => vote.id === socketData.id).length,
+    [room, socketData]
+  )
+
+  const vote = useCallback(
+    (game) => {
+      ws.sendVote(game)
+    },
+    [ws]
+  )
 
   const mappedGames = useMemo(
     () =>
@@ -122,12 +130,9 @@ const GameSelector = () => {
           </div>
         </div>
       )),
-    [room]
+    [room, isGameUserVotedFor, vote]
   )
 
-  const vote = (game) => {
-    ws.sendVote(game)
-  }
   return (
     <GameSelectorContainer>
       <DisposableHelp height="180px" storageKey="showGamesToolTip" className="disposable">

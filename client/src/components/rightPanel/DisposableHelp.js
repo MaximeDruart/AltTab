@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { styles } from "../../assets/defaultStyles"
 import styled from "styled-components"
 import closeSvg from "../../assets/icons/close.svg"
-import { motion, AnimatePresence, useAnimation } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 const DisposableContainer = styled(motion.div)`
   width: 100%;
@@ -62,7 +62,7 @@ const DisposableHelp = ({ children, storageKey, height }) => {
     } else {
       setIsHelpShown(JSON.parse(localStorage.getItem(storageKey)))
     }
-  }, [])
+  }, [storageKey])
 
   const hideWelcome = () => {
     setIsHelpShown(false)

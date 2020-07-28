@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import styled from "styled-components"
-import closeSvg from "../assets/icons/close.svg"
 import { styles } from "../assets/defaultStyles"
 import { useSelector, useDispatch } from "react-redux"
 import { setSocketError } from "../redux/actions/socketActions"

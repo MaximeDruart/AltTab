@@ -77,7 +77,6 @@ export default ({ children }) => {
     if (!usedRoutes.includes(pathname) && !room) {
       // send a room info request with pathname code
       socket.emit("getRoomInfo", pathname.slice(1), (room) => {
-        console.log(room)
         if (!room.error) {
           // if the server sends back a room, join it
           joinRoom(room.code)
@@ -88,6 +87,7 @@ export default ({ children }) => {
         }
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
   const systemMessage = (content) => ({
@@ -147,7 +147,7 @@ export default ({ children }) => {
         })
       }
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, user])
 
   return <WebSocketContext.Provider value={ws}>{children}</WebSocketContext.Provider>
 }

@@ -4,9 +4,6 @@ import { NavLink } from "react-router-dom"
 import { styles } from "../assets/defaultStyles"
 import { setLeftPanel } from "../redux/actions/interfaceActions"
 import { useDispatch, useSelector } from "react-redux"
-import profileSvg from "../assets/icons/profile.svg"
-import lobbySvg from "../assets/icons/lobby.svg"
-import { motion } from "framer-motion"
 
 const NavContainer = styled.div`
   width: 150px;

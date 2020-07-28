@@ -150,7 +150,7 @@ const RandomAvatar = ({ enableChange, optionProps, naked }) => {
     if (!optionProps && user) {
       setOptions(user.avatar)
     }
-  }, [user?.avatar])
+  }, [user, optionProps])
 
   return (
     <>

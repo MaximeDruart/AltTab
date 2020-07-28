@@ -135,7 +135,7 @@ const ConfirmBuy = ({ hide, item }) => {
     const toggle = ({ key }) => key === "Escape" && hide()
     window.addEventListener("keydown", toggle)
     return () => window.removeEventListener("keydown", toggle)
-  }, [])
+  }, [hide])
 
   return (
     <>

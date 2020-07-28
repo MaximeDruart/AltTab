@@ -242,7 +242,7 @@ const LobbyPanel = () => {
     if (leftPanelMode === "SETTINGS") dispatch(setLeftPanelMode("USERS"))
   }
 
-  useEffect(() => setRoomName(room?.name), [room?.name])
+  useEffect(() => setRoomName(room?.name), [room])
 
   const onChangeHandler = ({ target }) => {
     setRoomName(target.value)
