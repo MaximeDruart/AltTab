@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react"
 
 import styled from "styled-components"
 import { Button, styles } from "../../assets/defaultStyles"
@@ -23,6 +23,8 @@ const LoginContainer = styled.div`
 
 const Login = () => {
   const dispatch = useDispatch()
+
+  const emailInput = useRef(null)
 
   const [logs, setLogs] = useState({
     email: "",
@@ -50,6 +52,8 @@ const Login = () => {
     setLogs({ ...logs, [name]: value })
   }
 
+  useLayoutEffect(() => emailInput.current.focus(), [])
+
   return (
     <LoginContainer>
       <div className="auth-title">Welcome back !</div>
@@ -61,6 +65,7 @@ const Login = () => {
               {errorMessages.email && <div className="error-message">- {errorMessages.email}</div>}
             </div>
             <input
+              ref={emailInput}
               style={{ border: errorMessages.email ? "1px solid red" : `1px solid rgba(125, 99, 255, 0.6)` }}
               id="email"
               placeholder="a.b@gmail.com"

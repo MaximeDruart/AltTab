@@ -1,19 +1,22 @@
-import React from "react"
+import React, { useState } from "react"
 import styled from "styled-components"
 import { styles } from "../../../assets/defaultStyles"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 const hoverVariants = {
   hover: { stroke: styles.hoverBlue },
-  default: { stroke: styles.blue },
+  rotate: { rotate: 180 },
+  defaultRotate: { rotate: 0 },
 }
 
 const FieldContainer = styled.div`
   width: 100%;
+  padding-top: 20px;
 
   .field {
     width: 100%;
     .header {
+      margin-bottom: 45px;
       display: flex;
       flex-flow: row nowrap;
       justify-content: space-between;
@@ -52,7 +55,6 @@ const FieldContainer = styled.div`
       }
     }
     .items-container {
-      margin-top: 25px;
       width: 100%;
       display: flex;
       flex-flow: row wrap;
@@ -63,6 +65,8 @@ const FieldContainer = styled.div`
 `
 
 const Field = ({ children, title, desc }) => {
+  const [collapsed, setCollapsed] = useState(false)
+
   return (
     <FieldContainer>
       <div className="field">
@@ -72,7 +76,14 @@ const Field = ({ children, title, desc }) => {
             <div className="desc">{desc}</div>
           </div>
           <div className="collapse">
-            <motion.svg whileHover="hover" initial="initial" width="20" height="14" viewBox="0 0 20 14">
+            <motion.svg
+              onClick={() => setCollapsed(!collapsed)}
+              whileHover="hover"
+              animate={collapsed ? "rotate" : "defaultRotate"}
+              width="20"
+              height="14"
+              viewBox="0 0 20 14"
+            >
               <motion.path
                 variants={hoverVariants}
                 d="M2 2L10 11L18 2"
@@ -83,7 +94,23 @@ const Field = ({ children, title, desc }) => {
             </motion.svg>
           </div>
         </div>
-        <div className="items-container">{children}</div>
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.div
+              variants={{
+                open: { opacity: 1, height: "auto", transition: { staggerChildren: 0.02, delayChildren: 0.1 } },
+                collapsed: { opacity: 0, height: 0 },
+              }}
+              layout
+              initial="collapsed"
+              animate="open"
+              exit="collapsed"
+              className="items-container"
+            >
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </FieldContainer>
   )

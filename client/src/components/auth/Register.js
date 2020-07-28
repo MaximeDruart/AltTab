@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react"
 
 import styled from "styled-components"
 import { Button } from "../../assets/defaultStyles"
@@ -23,6 +23,8 @@ const Login = () => {
     password2: "",
   })
 
+  const usernameInput = useRef(null)
+
   const errorMessages = useSelector((state) => state.error.msg)
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth, shallowEqual)
 
@@ -43,6 +45,9 @@ const Login = () => {
     let { name, value } = target
     setLogs({ ...logs, [name]: value })
   }
+
+  useLayoutEffect(() => usernameInput.current.focus(), [])
+
   return (
     <LoginContainer errorMessages={errorMessages}>
       <div className="auth-title">Sign up</div>
@@ -54,6 +59,7 @@ const Login = () => {
               {errorMessages.username && <div className="error-message">- {errorMessages.username}</div>}
             </div>
             <input
+              ref={usernameInput}
               style={{ border: errorMessages.username ? "1px solid red" : `1px solid rgba(125, 99, 255, 0.6)` }}
               id="username"
               placeholder="paulbismutgamer"

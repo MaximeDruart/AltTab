@@ -192,6 +192,7 @@ const Shop = () => {
             <AvatarItem key={index} equip={equipAvatar} buy={buyAvatar} item={item}></AvatarItem>
           ))}
         </Field>
+        <Field title={shopData.gummy.title} desc={shopData.gummy.desc}></Field>
       </div>
     </ShopContainer>
   )

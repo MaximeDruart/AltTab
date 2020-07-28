@@ -39,7 +39,13 @@ export const styles = {
 }
 
 export const Button = (props) => (
-  <StyledButton {...props} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+  <StyledButton
+    {...props}
+    initial={{ scale: 0.85 }}
+    animate={{ scale: 1 }}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.97 }}
+  >
     {props.children}
   </StyledButton>
 )

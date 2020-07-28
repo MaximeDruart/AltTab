@@ -2,13 +2,14 @@ import React from "react"
 import styled from "styled-components"
 import Avatar from "../../Avatar"
 import { styles, Button } from "../../../assets/defaultStyles"
+import { motion } from "framer-motion"
 
-const AvatarContainer = styled.div`
+const AvatarContainer = styled(motion.div)`
   width: 180px;
   height: 250px;
-  background-color: ${styles.black.light};
-  margin-right: 25px;
-  margin-bottom: 25px;
+  background-color: ${styles.black.medium};
+  margin-right: 35px;
+  margin-bottom: 35px;
   border-radius: 12px;
   display: flex;
   flex-flow: column nowrap;
@@ -27,7 +28,12 @@ const AvatarContainer = styled.div`
 const AvatarItem = ({ item, buy, equip }) => {
   const itemTyped = { ...item, type: "avatar" }
   return (
-    <AvatarContainer>
+    <AvatarContainer
+      variants={{
+        open: { opacity: 1, scale: 1 },
+        collapsed: { opacity: 0, scale: 0 },
+      }}
+    >
       <div className="shop-avatar">
         <Avatar
           naked={true}
@@ -36,10 +42,11 @@ const AvatarItem = ({ item, buy, equip }) => {
           }}
         />
       </div>
+      <div className="name">{item.name}</div>
       <div className="price">{item.price}</div>
       <div className="actions">
         <Button size="small" onClick={() => buy(itemTyped)}>
-          buy
+          Buy
         </Button>
       </div>
     </AvatarContainer>
