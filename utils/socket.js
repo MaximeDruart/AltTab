@@ -5,6 +5,11 @@ const { uniqueNamesGenerator, adjectives, colors, animals } = require("unique-na
 let users = []
 let rooms = []
 
+const randomName = () => {
+  let tempName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: " " })
+  return tempName.charAt(0).toUpperCase() + tempName.slice(1)
+}
+
 const generateCode = () => {
   let code = ""
   const chars = "ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789"
@@ -25,13 +30,16 @@ const createUser = (socket) => {
   users.push(user)
 }
 
-const randomName = () => {
-  let tempName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: " " })
-  return tempName.charAt(0).toUpperCase() + tempName.slice(1)
-}
-
 const removeUser = (socketId) => {
   users = users.filter((user) => user.id !== socketId)
+}
+
+// if user changes data by logging in or smth
+const updateUser = (_user) => {
+  // find the user index in the users array
+  let foundUserIndex = users.findIndex((user) => user.id === _user.id)
+  // then update that array with user sent
+  users[foundUserIndex] = _user
 }
 
 const createRoom = (user, isPrivate) => {
@@ -52,6 +60,22 @@ const createRoom = (user, isPrivate) => {
     },
   }
   rooms.push(room)
+  return room
+}
+
+// case where the user updates its data and then we need to update the room that he's in so other members are aware
+const findUserRoomAndUpdate = (user) => {
+  const room = getUserRoom(user)
+  const roomMemberIndex = room.members.findIndex((member) => member.id === user.id)
+  room.members[roomMemberIndex] = user
+  return room
+}
+
+const updateRoom = (roomCode, settings) => {
+  const room = getRoomByCode(roomCode)
+  for (const prop in settings) {
+    room[prop] = settings[prop]
+  }
   return room
 }
 
@@ -136,4 +160,7 @@ module.exports = {
   removeUserFromAllRooms,
   userIsInRoom,
   addVote,
+  updateUser,
+  updateRoom,
+  findUserRoomAndUpdate,
 }

@@ -8,7 +8,7 @@ import crownSvg from "../../assets/icons/crown.svg"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import { setLeftPanelMode } from "../../redux/actions/interfaceActions"
-import Avatar from "./Avatar"
+import Avatar from "../Avatar"
 import ChatPanel from "./ChatPanel"
 import { WebSocketContext } from "../../WebSocketContext"
 import { AnimatePresence, motion } from "framer-motion"
@@ -174,6 +174,12 @@ const LobbyContainer = styled.div`
   }
 `
 
+const opScaleVariant = {
+  in: { opacity: 1, scale: 1, transition: { duration: 0.1 } },
+  out: { opacity: 0, scale: 0.3, transition: { duration: 0.1 } },
+  hover: { scale: 1.1, transition: { duration: 0.1 } },
+}
+
 const PlayerContainer = styled(motion.li)`
   width: 100%;
   position: relative;
@@ -258,7 +264,31 @@ const LobbyPanel = () => {
               )}
             </div>
             <div onClick={toggleLeftPanelMode} className="settings">
-              <img src={leftPanelMode === "USERS" ? settingsSvg : profileSvg} alt="" />
+              <AnimatePresence exitBeforeEnter={true}>
+                {leftPanelMode === "USERS" ? (
+                  <motion.img
+                    whileHover="hover"
+                    key="img"
+                    variants={opScaleVariant}
+                    initial="out"
+                    animate="in"
+                    exit="out"
+                    src={settingsSvg}
+                    alt=""
+                  />
+                ) : (
+                  <motion.img
+                    whileHover="hover"
+                    key="img2"
+                    variants={opScaleVariant}
+                    initial="out"
+                    animate="in"
+                    exit="out"
+                    src={profileSvg}
+                    alt=""
+                  />
+                )}
+              </AnimatePresence>
             </div>
           </div>
           {leftPanelMode === "SETTINGS" ? (

@@ -22,6 +22,9 @@ export { WebSocketContext }
 let socket
 let ws
 
+// routes excluded from being tested as a room name
+const usedRoutes = ["/", "/shop"]
+
 export default ({ children }) => {
   const { pathname } = useLocation()
   const history = useHistory()
@@ -58,18 +61,20 @@ export default ({ children }) => {
       }
     })
 
+  const sendUserInfo = (userInfo) => {
+    socket.emit("userInfo", userInfo)
+  }
+
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
   const sendMessage = (message) => socket.emit("sendMessage", message)
   const sendVote = (game) => socket.emit("vote", game)
-  const updateRoomSettings = (roomCode, settings) => {
-    socket.emit("updateRoom", roomCode, settings)
-  }
+  const updateRoomSettings = (roomCode, settings) => socket.emit("updateRoom", roomCode, settings)
+
   const debouncedUpdateRoomSettings = debounce(updateRoomSettings, 600)
 
   useEffect(() => {
-    console.log(pathname)
     // if pathname is not homepage and contains smth ( aka a code) AND a room isnt already in store (ie you've just created a room)
-    if (pathname !== "/" && !room) {
+    if (!usedRoutes.includes(pathname) && !room) {
       // send a room info request with pathname code
       socket.emit("getRoomInfo", pathname.slice(1), (room) => {
         console.log(room)
@@ -135,20 +140,12 @@ export default ({ children }) => {
     if (socket) {
       // if user is authenticated send that data to the socket server
       if (isAuthenticated) {
-        socket.emit("userInfo", {
+        sendUserInfo({
           username: user.username,
           isAuthenticated: isAuthenticated,
           avatar: user.avatar,
         })
-        // if user is a guest but has already come he's gonna have infos on localStorage
       }
-      // else if (localStorage.getItem("userInfo")) {
-      //   socket.emit("userInfo", {
-      //     username: user.username,
-      //     isAuthenticated: false,
-      //     avatar: user.avatar,
-      //   })
-      // }
     }
   }, [isAuthenticated])
 

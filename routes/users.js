@@ -33,15 +33,6 @@ router.get("/find/all/private", auth, (req, res) => {
     .catch((err) => res.status(404).json(err))
 })
 
-// @route POST users/edit/username
-// @desc edits username
-// @access Private
-router.post("/edit/username", auth, (req, res) => {
-  User.findByIdAndUpdate(req.user.id, { username: req.body.username })
-    .then((user) => res.json(user))
-    .catch((error) => res.status(404).json(err))
-})
-
 // @route POST users/edit/avatar
 // @desc edits avatar
 // @access Private
@@ -55,6 +46,8 @@ router.post("/edit/avatar", auth, async (req, res) => {
       username: user.username,
       email: user.email,
       avatar: req.body.avatar,
+      money: user.money,
+      acquiredItems: user.acquireditems,
     })
   } catch (error) {
     return res.status(404).json(error)
@@ -106,6 +99,8 @@ router.post("/register", (req, res) => {
                   username: user.username,
                   email: user.email,
                   avatar: user.avatar,
+                  money: user.money,
+                  acquiredItems: user.acquireditems,
                 },
               })
             })
@@ -144,6 +139,8 @@ router.post("/login", (req, res) => {
             username: user.username,
             email: user.email,
             avatar: user.avatar,
+            money: user.money,
+            acquiredItems: user.acquireditems,
           },
         })
       })
@@ -156,14 +153,9 @@ router.post("/login", (req, res) => {
 // @access Private
 router.get("/info", auth, (req, res) => {
   User.findById(req.user.id)
-    .select("-password")
+    .select("-password -createdAt -updatedAt -__v")
     .then((user) => {
-      return res.json({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        avatar: user.avatar,
-      })
+      return res.json(user)
     })
 })
 

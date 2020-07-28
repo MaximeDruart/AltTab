@@ -76,7 +76,7 @@ const DisposableHelp = ({ children, storageKey, height }) => {
           layout
           initial={{ scale: 0, opacity: 0, height: 0, marginBottom: 0 }}
           animate={{ scale: 1, opacity: 1, height: height || "240px", marginBottom: 35, transition: { delay: 0.6 } }}
-          exit={{ scale: 0, opacity: 0, height: 0, marginBottom: 0 }}
+          exit={{ opacity: 0, scale: 0, height: 0, marginBottom: 0 }}
           key="modal"
           height={height}
         >

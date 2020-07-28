@@ -1,0 +1,45 @@
+{
+  "avatar": {
+    "title": "Avatar items",
+    "desc": "Pick up customization items for your personal avatar !",
+    "items": [
+      {
+        "name": "Eyepatch",
+        "price": 6500
+      },
+      {
+        "name": "Hat",
+        "price": 6500
+      },
+      {
+        "name": "Hijab",
+        "price": 6500
+      },
+      {
+        "name": "Turban",
+        "price": 6500
+      },
+      {
+        "name": "WinterHat1",
+        "price": 6500
+      },
+      {
+        "name": "WinterHat2",
+        "price": 6500
+      },
+      {
+        "name": "WinterHat3",
+        "price": 6500
+      },
+      {
+        "name": "WinterHat4",
+        "price": 6500
+      }
+    ]
+  },
+  "gummy": {
+    "title": "Gummy items",
+    "desc": "Customize your worm with these awesome skins !",
+    "items": []
+  }
+}

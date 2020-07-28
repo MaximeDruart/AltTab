@@ -1,22 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react"
 import Avatar from "avataaars"
-import resetSvg from "../../assets/icons/reset.svg"
+import resetSvg from "../assets/icons/reset.svg"
 import { useSelector, useDispatch } from "react-redux"
-import { editAvatar } from "../../redux/actions/profileActions"
+import { editAvatar } from "../redux/actions/profileActions"
 import debounce from "lodash.debounce"
 
 const avatarOptions = {
   avatarStyle: ["Circle"],
   topType: [
     "NoHair",
-    "Eyepatch",
-    "Hat",
-    "Hijab",
-    "Turban",
-    "WinterHat1",
-    "WinterHat2",
-    "WinterHat3",
-    "WinterHat4",
     "LongHairBigHair",
     "LongHairBob",
     "LongHairBun",
@@ -122,10 +114,23 @@ const randomOptions = () => {
   return options
 }
 
-const RandomAvatar = ({ enableChange, optionProps }) => {
+const nakedButOneOptions = (specificOption) => {
+  let options = {}
+  for (const prop in avatarOptions) {
+    if (prop === Object.keys(specificOption)[0]) {
+      options[prop] = specificOption[prop]
+    } else {
+      options[prop] = "a"
+    }
+    options.avatarStyle = "Circle"
+  }
+  return options
+}
+
+const RandomAvatar = ({ enableChange, optionProps, naked }) => {
   const dispatch = useDispatch()
   const { user, isAuthenticated } = useSelector((state) => state.auth)
-  const [options, setOptions] = useState(optionProps || user.avatar)
+  const [options, setOptions] = useState(naked ? nakedButOneOptions(optionProps) : optionProps || user.avatar)
 
   // first create a debounced function that dispatch the edit action
   const debouncedEditAvatar = debounce((options) => {
@@ -139,6 +144,13 @@ const RandomAvatar = ({ enableChange, optionProps }) => {
     setOptions(newOptions)
     if (isAuthenticated) memoUpdateAvatar(newOptions)
   }
+
+  useEffect(() => {
+    // if auth status and no option props are forced upon it update it
+    if (!optionProps && user) {
+      setOptions(user.avatar)
+    }
+  }, [user?.avatar])
 
   return (
     <>

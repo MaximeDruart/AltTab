@@ -18,6 +18,16 @@ const userSchema = new mongoose.Schema(
       type: Object,
       required: true,
     },
+    money: {
+      type: Number,
+      default: 0,
+    },
+    acquiredItems: {
+      avatar: {
+        type: [String],
+        default: [],
+      },
+    },
   },
   {
     timestamps: true,

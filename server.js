@@ -41,6 +41,9 @@ const {
   userIsInRoom,
   getUserRoom,
   addVote,
+  updateRoom,
+  updateUser,
+  findUserRoomAndUpdate,
 } = require("./utils/socket")
 
 const io = require("socket.io")(server)
@@ -49,15 +52,21 @@ io.on("connect", (socket) => {
 
   // first we create a user with some random options like name, id, avatar etc
   createUser(socket)
+  // then we send the socket info the client
+  socket.emit("socketData", socket.user)
 
-  // then the client sends its personal info such as auth status, username, avatar etc which will overwrite the previous data
+  // then the client sends its personal info such as auth status, username, avatar etc which will overwrite the previous data if needed
   socket.on("userInfo", (userData) => {
     if (userData.username) socket.user.name = userData.username
     if (userData.avatar) socket.user.avatar = userData.avatar
-  })
 
-  // then we're sending it back to the client
-  socket.emit("socketData", socket.user)
+    updateUser(socket.user)
+    if (userIsInRoom(socket.user)) {
+      const updatedRoom = findUserRoomAndUpdate(socket.user)
+      io.to(updatedRoom.id).emit("updateRoomSuccess", updatedRoom)
+    }
+    socket.emit("socketData", socket.user)
+  })
 
   socket.on("createRoom", (isPrivate, fn) => {
     const newRoom = createRoom(socket.user, isPrivate)
@@ -104,10 +113,8 @@ io.on("connect", (socket) => {
   socket.on("updateRoom", (roomCode, settings) => {
     const room = getRoomByCode(roomCode)
     if (room) {
-      for (const prop in settings) {
-        room[prop] = settings[prop]
-      }
-      io.to(room.id).emit("updateRoomSuccess", room)
+      let updatedRoom = updateRoom(roomCode, settings)
+      io.to(room.id).emit("updateRoomSuccess", updatedRoom)
       !room.private && io.emit("getPublicRoomsSuccess", getPublicRooms())
     }
   })

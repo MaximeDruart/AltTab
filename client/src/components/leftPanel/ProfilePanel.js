@@ -5,7 +5,7 @@ import logoutSvg from "../../assets/icons/logout.svg"
 import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth, setAuthMode } from "../../redux/actions/interfaceActions"
 import { logoutUser } from "../../redux/actions/authActions"
-import Avatar from "./Avatar"
+import Avatar from "../Avatar"
 
 const ProfileContainer = styled.div`
   width: 100%;

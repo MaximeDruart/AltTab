@@ -18,6 +18,7 @@ export const styles = {
   blue: "#7D63FF",
   disabledBlue: "#8881ab",
   darkBlue: "#463988",
+  hoverBlue: "#a18ff8",
   black: {
     light: "#272732",
     medium: "#1B1B26",
