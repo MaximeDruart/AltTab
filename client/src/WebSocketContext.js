@@ -140,6 +140,7 @@ export default ({ children }) => {
     if (socket) {
       // if user is authenticated send that data to the socket server
       if (isAuthenticated) {
+        console.log("sending info")
         sendUserInfo({
           username: user.username,
           isAuthenticated: isAuthenticated,

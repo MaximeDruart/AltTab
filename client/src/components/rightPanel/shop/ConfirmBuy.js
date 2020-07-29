@@ -1,9 +1,11 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { motion } from "framer-motion"
 import { styles, Button } from "../../../assets/defaultStyles"
 import closeSvg from "../../../assets/icons/close.svg"
 import Avatar from "../../Avatar"
+import { useDispatch, useSelector } from "react-redux"
+import { buyItem, setBuyConfirmed } from "../../../redux/actions/profileActions"
 
 const ConfirmBuyContainer = styled.div`
   ${styles.flexCentered};
@@ -124,18 +126,35 @@ const Filter = styled(motion.div)`
   cursor: pointer;
 `
 
+const formattedName = (name) =>
+  name
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .replace(/[0-9]/g, "")
+
 const ConfirmBuy = ({ hide, item }) => {
-  const formattedName = (name) =>
-    name
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase())
-      .replace(/[0-9]/g, "")
+  const dispatch = useDispatch()
+  const { user, buyConfirmed } = useSelector((state) => state.auth)
+
+  const finalBuy = () => {
+    dispatch(buyItem(item))
+  }
+
+  useEffect(() => {
+    dispatch(setBuyConfirmed(false))
+  }, [dispatch])
+
+  useEffect(() => {
+    buyConfirmed && hide()
+  }, [buyConfirmed, hide])
 
   useEffect(() => {
     const toggle = ({ key }) => key === "Escape" && hide()
     window.addEventListener("keydown", toggle)
     return () => window.removeEventListener("keydown", toggle)
   }, [hide])
+
+  const userHasEnoughMoney = useCallback(() => user.money - item.price >= 0, [item, user.money])
 
   return (
     <>
@@ -156,6 +175,7 @@ const ConfirmBuy = ({ hide, item }) => {
                 {item.type === "avatar" && (
                   <Avatar
                     naked={true}
+                    randomizeOnClick={true}
                     optionProps={{
                       topType: item.name,
                     }}
@@ -170,7 +190,7 @@ const ConfirmBuy = ({ hide, item }) => {
             <div className="balance-check">
               <div className="actual balance-line">
                 <div className="balance-left">Actual balance</div>
-                <div className="balance-right actual-balance">5080 Dollex</div>
+                <div className="balance-right actual-balance">{user.money} Dollex</div>
               </div>
               <div className="item balance-line">
                 <div className="balance-left">{formattedName(item.name)} </div>
@@ -178,10 +198,19 @@ const ConfirmBuy = ({ hide, item }) => {
               </div>
               <div className="new balance-line">
                 <div className="balance-left">New balance</div>
-                <div className="balance-right new-balance">5080 Dollex</div>
+                <div
+                  style={{
+                    color: !userHasEnoughMoney() ? styles.red : styles.txtColor1,
+                  }}
+                  className="balance-right new-balance"
+                >
+                  {user.money - item.price} Dollex
+                </div>
               </div>
             </div>
-            <Button size="large">Buy</Button>
+            <Button variant={!userHasEnoughMoney() && "disabled"} onClick={finalBuy} size="large">
+              Buy
+            </Button>
           </div>
         </motion.div>
         <Filter initial={{ opacity: 0 }} animate={{ opacity: 0.75 }} exit={{ opacity: 0 }} onClick={hide} />

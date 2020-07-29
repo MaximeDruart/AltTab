@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     money: {
       type: Number,
-      default: 0,
+      default: 15000,
     },
     acquiredItems: {
       avatar: {
@@ -33,6 +33,17 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 )
+
+userSchema.methods.getPublicFields = function () {
+  return {
+    id: this.id,
+    username: this.username,
+    email: this.email,
+    avatar: this.avatar,
+    money: this.money,
+    acquiredItems: this.acquiredItems,
+  }
+}
 
 const User = mongoose.model("User", userSchema)
 

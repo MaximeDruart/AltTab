@@ -336,11 +336,10 @@ const LobbyPanel = () => {
                   suppressScrollX: true,
                 }}
               >
-                <AnimatePresence initial={false}>
+                <AnimatePresence>
                   {room.members.map((member, index) => (
                     <PlayerContainer
                       key={index}
-                      positionTransition
                       initial={{ opacity: 0, scale: 0.3 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}

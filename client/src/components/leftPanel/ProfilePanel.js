@@ -157,7 +157,7 @@ const Profile = () => {
               <div className="email">{user?.email}</div>
             </>
           ) : (
-            <div className="name">{socketData.name}</div>
+            <div className="name">{socketData?.name}</div>
           )}
         </div>
       </div>

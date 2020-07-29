@@ -9,34 +9,36 @@ const validateLoginInput = require("../validation/login")
 let User = require("../models/user.model")
 const { getRandomAvatarOptions } = require("../utils/main")
 
-router.post("/find/id", (req, res) => {
-  User.findById(req.body.id)
-    .then((user) => res.json(user))
-    .catch((err) => res.status(404).json({ error: `No user found for id : ${req.body.id}` }))
+const userException = (status, message) => ({
+  status,
+  message,
 })
 
-router.get("/clear", (req, res) => {
-  User.remove({})
-    .then((user) => res.json(user))
-    .catch((err) => res.status(404).json(err))
-})
-
-router.get("/find/all", (req, res) => {
-  User.find()
-    .then((user) => res.json(user))
-    .catch((err) => res.status(404).json(err))
-})
-
-router.get("/find/all/private", auth, (req, res) => {
-  User.find()
-    .then((user) => res.json(user))
-    .catch((err) => res.status(404).json(err))
+// @route POST users/buy
+// @desc buy item
+// @access Private
+router.post("/buy", auth, async (req, res) => {
+  const { item } = req.body
+  try {
+    let user = await User.findById(req.user.id)
+    if (user && item) {
+      if (user.money >= item.price) {
+        if (!user.acquiredItems[item.type].includes(item.name)) {
+          user.money -= item.price
+          user.acquiredItems[item.type] = [...user.acquiredItems[item.type], item.name]
+          user = await user.save()
+          return res.json(user.getPublicFields())
+        } else throw userException(403, "Item already in inventory")
+      } else throw userException(403, "Not enough money dawg")
+    } else throw userException(404, "User or item not found")
+  } catch (error) {
+    return res.status(error.status).json({ error: error.message })
+  }
 })
 
 // @route POST users/edit/avatar
 // @desc edits avatar
 // @access Private
-
 router.post("/edit/avatar", auth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.user.id, { avatar: req.body.avatar })
@@ -47,7 +49,7 @@ router.post("/edit/avatar", auth, async (req, res) => {
       email: user.email,
       avatar: req.body.avatar,
       money: user.money,
-      acquiredItems: user.acquireditems,
+      acquiredItems: user.acquiredItems,
     })
   } catch (error) {
     return res.status(404).json(error)
@@ -94,14 +96,7 @@ router.post("/register", (req, res) => {
               if (err) throw err
               res.json({
                 token,
-                user: {
-                  id: user.id,
-                  username: user.username,
-                  email: user.email,
-                  avatar: user.avatar,
-                  money: user.money,
-                  acquiredItems: user.acquireditems,
-                },
+                user: user.getPublicFields(),
               })
             })
           })
@@ -134,14 +129,7 @@ router.post("/login", (req, res) => {
         if (err) throw err
         res.json({
           token,
-          user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            avatar: user.avatar,
-            money: user.money,
-            acquiredItems: user.acquireditems,
-          },
+          user: user.getPublicFields(),
         })
       })
     })

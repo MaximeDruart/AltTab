@@ -1,11 +1,15 @@
-import React, { useState } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import styled from "styled-components"
-import shopData from "./data.json"
+import shopDataRaw from "./data.json"
 import Field from "./Field"
 import AvatarItem from "./AvatarItem"
 import ConfirmBuy from "./ConfirmBuy"
 import { styles } from "../../../assets/defaultStyles"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
+import { useSelector, useDispatch } from "react-redux"
+import { toggleAuth, setAuthMode } from "../../../redux/actions/interfaceActions"
+import cloneDeep from "lodash.clonedeep"
+import { editAvatar } from "../../../redux/actions/profileActions"
 
 const ShopContainer = styled.div`
   width: 94%;
@@ -24,10 +28,14 @@ const ShopContainer = styled.div`
     justify-content: flex-end;
 
     .list-type {
-      margin: 0 10px;
       svg {
         margin: 0 5px;
         cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:hover {
+          filter: saturate(2);
+        }
         line,
         rect {
           transition: all 0.15s ease;
@@ -35,9 +43,11 @@ const ShopContainer = styled.div`
       }
     }
     .visibility-toggles {
+      margin-left: 10px;
       display: flex;
       flex-flow: row nowrap;
       .toggle {
+        white-space: nowrap;
         margin: 0 10px;
       }
     }
@@ -45,14 +55,50 @@ const ShopContainer = styled.div`
 `
 
 const Shop = () => {
-  const [[showConfirm, confirmItem], setShowConfirm] = useState([false, null])
-  const [showOwned, setShowOwned] = useState(true)
-  const [listType, setListType] = useState("SQUARE") // is "SQUARE" or "LIST"
+  const [shopData, setShopData] = useState(shopDataRaw)
   const [showSale, setShowSale] = useState(true)
-  const equipAvatar = (avatar) => {}
-  const buyAvatar = (avatar) => {
-    setShowConfirm([true, avatar])
+  const [showOwned, setShowOwned] = useState(false)
+  const [[showConfirm, confirmItem], setShowConfirm] = useState([false, null])
+  const [listType, setListType] = useState("SQUARE") // is "SQUARE" or "LIST"
+  const dispatch = useDispatch()
+  const { user, isAuthenticated } = useSelector((state) => state.auth)
+
+  const equipAvatar = (item) => {
+    // change in db
+    const fullAvatar = {
+      ...user.avatar,
+      topType: item.name,
+    }
+    dispatch(editAvatar(fullAvatar))
+    // change in socket
   }
+
+  const isItemOwned = (itemName, field) => user && user.acquiredItems[field].includes(itemName)
+
+  useEffect(() => {
+    if (!user) return
+    const newShopData = cloneDeep(shopDataRaw)
+    for (const field in newShopData) {
+      newShopData[field].items = newShopData[field].items.filter((item) =>
+        // if user has it in inventory, return the boolean "shoul we show owned items ?" else return the boolean "should we show other items ?"
+        isItemOwned(item.name, field) ? showOwned : showSale
+      )
+    }
+    setShopData(newShopData)
+  }, [showSale, showOwned, user])
+
+  const buyAvatar = useCallback(
+    (avatar) => {
+      if (isAuthenticated) {
+        setShowConfirm([true, avatar])
+      } else {
+        dispatch(setAuthMode("LOGIN"))
+        dispatch(toggleAuth())
+      }
+    },
+    [isAuthenticated, dispatch]
+  )
+
   const hideConfirm = () => {
     setShowConfirm([false, null])
   }
@@ -169,27 +215,40 @@ const Shop = () => {
             />
           </svg>
         </div>
-        <div className="visibility-toggles">
-          <div className="toggle owned">
-            <input
-              onChange={() => setShowOwned(!showOwned)}
-              checked={showOwned}
-              type="checkbox"
-              id="owned"
-              name="owned"
-            />
-            <label htmlFor="owned">Show owned</label>
-          </div>
-          <div className="toggle sale">
-            <input onChange={() => setShowSale(!showSale)} checked={showSale} type="checkbox" id="sale" name="sale" />
-            <label htmlFor="sale">Show for sale</label>
-          </div>
-        </div>
+        {isAuthenticated && (
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: "auto", opacity: 1 }}
+            className="visibility-toggles"
+          >
+            <div className="toggle owned">
+              <input
+                onChange={() => setShowOwned(!showOwned)}
+                checked={showOwned}
+                type="checkbox"
+                id="owned"
+                name="owned"
+              />
+              <label htmlFor="owned">Show owned</label>
+            </div>
+            <div className="toggle sale">
+              <input onChange={() => setShowSale(!showSale)} checked={showSale} type="checkbox" id="sale" name="sale" />
+              <label htmlFor="sale">Show for sale</label>
+            </div>
+          </motion.div>
+        )}
       </div>
       <div className="shop-container">
         <Field title={shopData.avatar.title} desc={shopData.avatar.desc}>
           {shopData.avatar.items.map((item, index) => (
-            <AvatarItem key={index} equip={equipAvatar} buy={buyAvatar} item={item}></AvatarItem>
+            <AvatarItem
+              isOwned={isItemOwned(item.name, "avatar")}
+              isEquipped={item.name === user?.avatar.topType}
+              key={index}
+              equip={equipAvatar}
+              buy={buyAvatar}
+              item={item}
+            ></AvatarItem>
           ))}
         </Field>
         <Field title={shopData.gummy.title} desc={shopData.gummy.desc}></Field>

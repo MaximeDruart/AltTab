@@ -17,3 +17,24 @@ export const editAvatar = (avatar) => (dispatch, getState) => {
       dispatch({ type: "EDIT_FAIL" })
     })
 }
+
+export const buyItem = (item) => (dispatch, getState) => {
+  dispatch({ type: "SET_LOADING" })
+  axios
+    .post("/users/buy", { item }, tokenConfig(getState))
+    .then((res) => {
+      dispatch({
+        type: "BUY_SUCCESS",
+        payload: res.data,
+      })
+    })
+    .catch((error) => {
+      dispatch(returnErrors(error.response.data, error.response.status))
+      dispatch({ type: "BUY_FAIL" })
+    })
+}
+
+export const setBuyConfirmed = (payload) => ({
+  type: "SET_BUY_CONFIRMED",
+  payload,
+})

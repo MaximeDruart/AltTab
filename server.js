@@ -61,6 +61,7 @@ io.on("connect", (socket) => {
     if (userData.avatar) socket.user.avatar = userData.avatar
 
     updateUser(socket.user)
+
     if (userIsInRoom(socket.user)) {
       const updatedRoom = findUserRoomAndUpdate(socket.user)
       io.to(updatedRoom.id).emit("updateRoomSuccess", updatedRoom)

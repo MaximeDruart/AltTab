@@ -1,5 +1,5 @@
 const initialState = {
-  activeLeftPanel: "LOBBY", // will switch between "PROFILE" and "LOBBY"
+  activeLeftPanel: "PROFILE", // will switch between "PROFILE" and "LOBBY"
   leftPanelMode: "USERS", // switch between "USERS" and "SETTINGS"
   showAuth: false,
   authMode: "REGISTER", // switches between "REGISTER" and "LOGIN"

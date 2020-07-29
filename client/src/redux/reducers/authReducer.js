@@ -3,6 +3,7 @@ const initialState = {
   isAuthenticated: false,
   isLoading: false,
   user: null,
+  buyConfirmed: false,
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -46,6 +47,20 @@ export default (state = initialState, { type, payload }) => {
         ...state,
         user: payload,
         isLoading: false,
+      }
+
+    case "BUY_SUCCESS":
+      return {
+        ...state,
+        user: payload,
+        isLoading: false,
+        buyConfirmed: true,
+      }
+
+    case "SET_BUY_CONFIRMED":
+      return {
+        ...state,
+        buyConfirmed: payload,
       }
 
     default:

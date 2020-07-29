@@ -30,10 +30,12 @@ const FieldContainer = styled.div`
         .title {
           font-size: ${styles.txtSize.XLarge};
           margin-right: 20px;
+          white-space: nowrap;
         }
         .desc {
           font-size: ${styles.txtSize.medium};
           color: ${styles.txtColor2};
+          white-space: nowrap;
         }
       }
 
@@ -94,14 +96,13 @@ const Field = ({ children, title, desc }) => {
             </motion.svg>
           </div>
         </div>
-        <AnimatePresence>
+        <AnimatePresence exitBeforeEnter>
           {!collapsed && (
             <motion.div
               variants={{
                 open: { opacity: 1, height: "auto", transition: { staggerChildren: 0.02, delayChildren: 0.1 } },
                 collapsed: { opacity: 0, height: 0 },
               }}
-              layout
               initial="collapsed"
               animate="open"
               exit="collapsed"

@@ -127,7 +127,7 @@ const nakedButOneOptions = (specificOption) => {
   return options
 }
 
-const RandomAvatar = ({ enableChange, optionProps, naked }) => {
+const RandomAvatar = ({ enableChange, optionProps, naked, randomizeOnClick }) => {
   const dispatch = useDispatch()
   const { user, isAuthenticated } = useSelector((state) => state.auth)
   const [options, setOptions] = useState(naked ? nakedButOneOptions(optionProps) : optionProps || user.avatar)
@@ -138,6 +138,19 @@ const RandomAvatar = ({ enableChange, optionProps, naked }) => {
   }, 1000)
   // then memoize so it's not redefined on each rerender which would cause the debounce timer to reset
   const memoUpdateAvatar = useCallback(debouncedEditAvatar, [])
+
+  useEffect(() => {
+    let int
+    if (randomizeOnClick) {
+      int = setInterval(() => {
+        const newOptions = randomOptions()
+        newOptions.topType = optionProps.topType
+        setOptions(newOptions)
+      }, 500)
+    }
+
+    return () => clearInterval(int)
+  }, [])
 
   const updateOptions = () => {
     const newOptions = randomOptions()
@@ -151,6 +164,10 @@ const RandomAvatar = ({ enableChange, optionProps, naked }) => {
       setOptions(user.avatar)
     }
   }, [user, optionProps])
+
+  useEffect(() => {
+    setOptions(naked ? nakedButOneOptions(optionProps) : optionProps || user.avatar)
+  }, [optionProps])
 
   return (
     <>
