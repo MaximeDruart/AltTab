@@ -73,7 +73,7 @@ const Shop = () => {
     // change in socket
   }
 
-  const isItemOwned = (itemName, field) => user && user.acquiredItems[field].includes(itemName)
+  const isItemOwned = useCallback((itemName, field) => user && user.acquiredItems[field].includes(itemName), [user])
 
   useEffect(() => {
     if (!user) return
@@ -85,7 +85,7 @@ const Shop = () => {
       )
     }
     setShopData(newShopData)
-  }, [showSale, showOwned, user])
+  }, [showSale, showOwned, user, isItemOwned])
 
   const buyAvatar = useCallback(
     (avatar) => {

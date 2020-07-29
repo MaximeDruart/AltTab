@@ -1,9 +1,8 @@
-import React, { useState } from "react"
+import React from "react"
 import styled from "styled-components"
 import Avatar from "../../Avatar"
 import { styles, Button } from "../../../assets/defaultStyles"
 import { motion } from "framer-motion"
-import { useSelector } from "react-redux"
 
 const AvatarContainer = styled(motion.div)`
   width: 180px;

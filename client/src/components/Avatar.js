@@ -150,6 +150,7 @@ const RandomAvatar = ({ enableChange, optionProps, naked, randomizeOnClick }) =>
     }
 
     return () => clearInterval(int)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const updateOptions = () => {
@@ -159,15 +160,8 @@ const RandomAvatar = ({ enableChange, optionProps, naked, randomizeOnClick }) =>
   }
 
   useEffect(() => {
-    // if auth status and no option props are forced upon it update it
-    if (!optionProps && user) {
-      setOptions(user.avatar)
-    }
-  }, [user, optionProps])
-
-  useEffect(() => {
     setOptions(naked ? nakedButOneOptions(optionProps) : optionProps || user.avatar)
-  }, [optionProps])
+  }, [optionProps, naked, user])
 
   return (
     <>
