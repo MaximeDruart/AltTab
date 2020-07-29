@@ -61,10 +61,12 @@ export default ({ children }) => {
       }
     })
 
-  const sendUserInfo = (userInfo) => {
-    socket.emit("userInfo", userInfo)
-  }
+  const getRoomInfoForWelcomeJoin = (code) =>
+    socket.emit("getRoomInfo", code, (room) =>
+      room.error ? dispatch(setSocketError(room.error)) : history.push(`/${code}`)
+    )
 
+  const sendUserInfo = (userInfo) => socket.emit("userInfo", userInfo)
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
   const sendMessage = (message) => socket.emit("sendMessage", message)
   const sendVote = (game) => socket.emit("vote", game)
@@ -96,14 +98,10 @@ export default ({ children }) => {
     content,
   })
 
-  const baseURL = () => window.location.pathname
-
   if (!socket) {
     socket = process.env.NODE_ENV === "development" ? io.connect("http://localhost:3001") : io.connect()
 
-    socket.on("socketData", (data) => {
-      dispatch(setSocketData(data))
-    })
+    socket.on("socketData", (data) => dispatch(setSocketData(data)))
 
     socket.on("newUserJoined", (user) => {
       dispatch(newUserJoined(user))
@@ -132,6 +130,7 @@ export default ({ children }) => {
       sendVote,
       updateRoomSettings,
       debouncedUpdateRoomSettings,
+      getRoomInfoForWelcomeJoin,
     }
   }
 

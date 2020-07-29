@@ -147,7 +147,10 @@ const Welcome = () => {
   }
 
   const joinRoom = () => {
-    roomCode.length === 4 && history.push(roomCode)
+    if (roomCode.length === 4) {
+      ws.getRoomInfoForWelcomeJoin(roomCode)
+      setRoomCode("")
+    }
   }
 
   return (
