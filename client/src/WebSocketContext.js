@@ -96,11 +96,10 @@ export default ({ children }) => {
     content,
   })
 
+  const baseURL = () => window.location.pathname
+
   if (!socket) {
-    socket =
-      process.env.NODE_ENV === "development"
-        ? io.connect("http://localhost:3001")
-        : io.connect(window.location.pathname)
+    socket = process.env.NODE_ENV === "development" ? io.connect("http://localhost:3001") : io.connect()
 
     socket.on("socketData", (data) => {
       dispatch(setSocketData(data))
