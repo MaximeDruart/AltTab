@@ -95,7 +95,7 @@ const GameSelector = () => {
         <div key={index} className="game">
           <div className="header">
             <motion.div animate={{ scale: 1.1 }} className="votes">
-              {room?.votes[game.name].length} votes
+              {room?.votes[game.name].length} vote{room?.votes[game.name].length > 1 && "s"}
             </motion.div>
             <Button variant={isGameUserVotedFor(game.name) && "dark"} size="small" onClick={() => vote(game.name)}>
               <AnimatePresence>

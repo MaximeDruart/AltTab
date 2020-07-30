@@ -97,6 +97,11 @@ const addUserToRoomByCode = (userId, code) => {
 const removeUserFromAllRooms = (user) => {
   for (const room of rooms) {
     room.members = room.members.filter((member) => member.id !== user.id)
+    // removing its vote too
+    for (const prop in room.votes) {
+      if (!room.votes[prop].length) continue
+      room.votes[prop] = room.votes[prop].filter((vote) => vote.id !== user.id)
+    }
   }
 }
 

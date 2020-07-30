@@ -134,6 +134,7 @@ io.on("connect", (socket) => {
       removeUserFromAllRooms(socket.user)
       fn("success")
       filteredUnusedRooms()
+      io.to(room.id).emit("updateRoomSuccess", room)
       io.emit("getPublicRoomsSuccess", getPublicRooms())
     })
   })
@@ -147,6 +148,7 @@ io.on("connect", (socket) => {
       removeUserFromAllRooms(user)
 
       io.to(room.id).emit("userWasKicked", user)
+      io.to(room.id).emit("updateRoomSuccess", room)
       io.to(kickedUserSocket.id).emit("youHaveBeenKicked")
     })
   })
@@ -160,6 +162,7 @@ io.on("connect", (socket) => {
       socket.leave(room.id, (err) => {
         removeUserFromAllRooms(socket.user)
         filteredUnusedRooms()
+        io.to(room.id).emit("updateRoomSuccess", room)
         io.emit("getPublicRoomsSuccess", getPublicRooms())
         removeUser(socket.id)
       })
