@@ -1,8 +1,9 @@
 const initialState = {
-  activeLeftPanel: "PROFILE", // will switch between "PROFILE" and "LOBBY"
+  activeLeftPanel: "LOBBY", // will switch between "PROFILE" and "LOBBY"
   leftPanelMode: "USERS", // switch between "USERS" and "SETTINGS"
   showAuth: false,
-  authMode: "REGISTER", // switches between "REGISTER" and "LOGIN"
+  authMode: "REGISTER", // switches between "REGISTER" and "LOGIN",
+  successMessage: "",
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -23,6 +24,11 @@ export default (state = initialState, { type, payload }) => {
       lobby.settings[Object.keys(payload)[0]] = payload[Object.keys(payload)[0]]
       return { ...state, lobby }
 
+    case "SET_SUCCESS_MESSAGE":
+      return {
+        ...state,
+        successMessage: payload,
+      }
     default:
       return state
   }

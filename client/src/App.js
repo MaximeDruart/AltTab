@@ -8,6 +8,7 @@ import AuthPopup from "./components/auth"
 import { loadUser } from "./redux/actions/authActions"
 import Alert from "./components/Alert"
 import { AnimatePresence } from "framer-motion"
+import AlertSuccess from "./components/AlertSuccess"
 
 const AppContainer = styled.div`
   width: 100vw;
@@ -29,6 +30,7 @@ const App = () => {
   return (
     <AppContainer>
       <Alert />
+      <AlertSuccess />
       <Nav />
       <LeftPanel />
       <RightPanel />

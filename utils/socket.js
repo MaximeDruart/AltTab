@@ -40,8 +40,6 @@ const updateUser = (_user) => {
   let foundUserIndex = users.findIndex((user) => user.id === _user.id)
   // then update that array with user sent
   users[foundUserIndex] = _user
-
-  console.log("users : \n", users)
 }
 
 const createRoom = (user, isPrivate) => {

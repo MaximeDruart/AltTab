@@ -16,3 +16,8 @@ export const setAuthMode = (payload) => ({
   type: "SET_AUTH_MODE",
   payload,
 })
+
+export const setSuccessMessage = (payload) => ({
+  type: "SET_SUCCESS_MESSAGE",
+  payload,
+})

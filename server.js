@@ -116,7 +116,10 @@ io.on("connect", (socket) => {
     if (room) {
       let updatedRoom = updateRoom(roomCode, settings)
       io.to(room.id).emit("updateRoomSuccess", updatedRoom)
-      !room.private && io.emit("getPublicRoomsSuccess", getPublicRooms())
+
+      // we're emitting if the room is private or if there has been a privacy update on a room
+      if (!room.private) return io.emit("getPublicRoomsSuccess", getPublicRooms())
+      settings.hasOwnProperty("private") && io.emit("getPublicRoomsSuccess", getPublicRooms())
     }
   })
 

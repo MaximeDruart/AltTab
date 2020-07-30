@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext, useState, useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { styles, Selector } from "../../assets/defaultStyles"
 import { useSelector, useDispatch } from "react-redux"
@@ -7,7 +7,7 @@ import profileSvg from "../../assets/icons/profile.svg"
 import crownSvg from "../../assets/icons/crown.svg"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import PerfectScrollbar from "react-perfect-scrollbar"
-import { setLeftPanelMode } from "../../redux/actions/interfaceActions"
+import { setLeftPanelMode, setSuccessMessage } from "../../redux/actions/interfaceActions"
 import Avatar from "../Avatar"
 import ChatPanel from "./ChatPanel"
 import { WebSocketContext } from "../../WebSocketContext"
@@ -127,7 +127,7 @@ const LobbyContainer = styled.div`
         .link-input {
           color: ${styles.txtColorDisabled};
           background-color: ${styles.black.light};
-          border-radius: 12px;
+          border-radius: 10px;
           height: 30px;
           display: flex;
           align-items: center;
@@ -135,15 +135,18 @@ const LobbyContainer = styled.div`
           font-size: ${styles.txtSize.medium};
           padding: 0 10px;
 
-          input {
+          .code {
             font-size: ${styles.txtSize.medium};
-            border-radius: 12px;
+            border-radius: 10px;
             outline: none;
             border: none;
             text-transform: uppercase;
             color: ${styles.txtColor2};
             background-color: ${styles.black.light};
             width: 150px;
+          }
+          .clip-board {
+            cursor: pointer;
           }
         }
       }
@@ -251,43 +254,41 @@ const LobbyPanel = () => {
     })
   }
 
+  const isLobbyOwner = useCallback(() => room?.ownerId === socketData?.id, [room, socketData])
+
+  const copyToClip = () => {
+    navigator.clipboard
+      .writeText(window.location.origin + "/" + room.code)
+      .then(() => dispatch(setSuccessMessage("Link copied to clipboard !")))
+  }
+
   return (
     <LobbyContainer>
       {room ? (
         <div className="lobby">
           <div className="lobby-header">
             <div className="lobby-name">
-              {leftPanelMode === "SETTINGS" && room?.ownerId === socketData?.id ? (
-                <input value={roomName} onChange={onChangeHandler} className="room-name-input" type="text" />
-              ) : (
-                <p>{room.name}</p>
-              )}
+              <input
+                disabled={!isLobbyOwner()}
+                value={roomName || ""}
+                //  2 steps verification for people who could remove the disabled attribute in editor :)
+                onChange={(e) => isLobbyOwner() && onChangeHandler(e)}
+                className="room-name-input"
+                type="text"
+              />
             </div>
             <div onClick={toggleLeftPanelMode} className="settings">
               <AnimatePresence exitBeforeEnter={true}>
-                {leftPanelMode === "USERS" ? (
-                  <motion.img
-                    whileHover="hover"
-                    key="img"
-                    variants={opScaleVariant}
-                    initial="out"
-                    animate="in"
-                    exit="out"
-                    src={settingsSvg}
-                    alt=""
-                  />
-                ) : (
-                  <motion.img
-                    whileHover="hover"
-                    key="img2"
-                    variants={opScaleVariant}
-                    initial="out"
-                    animate="in"
-                    exit="out"
-                    src={profileSvg}
-                    alt=""
-                  />
-                )}
+                <motion.img
+                  whileHover="hover"
+                  key={leftPanelMode === "USERS" ? settingsSvg : profileSvg}
+                  src={leftPanelMode === "USERS" ? settingsSvg : profileSvg}
+                  variants={opScaleVariant}
+                  initial="out"
+                  animate="in"
+                  exit="out"
+                  alt=""
+                />
               </AnimatePresence>
             </div>
           </div>
@@ -297,13 +298,13 @@ const LobbyPanel = () => {
                 <div className="label">Lobby privacy</div>
                 <Selector>
                   <div
-                    onClick={() => room.private && ws.updateRoomSettings({ private: false })}
+                    onClick={() => room.private && ws.updateRoomSettings(room.code, { private: false })}
                     className={room.private ? "left" : "left active"}
                   >
                     Public
                   </div>
                   <div
-                    onClick={() => !room.private && ws.updateRoomSettings({ private: true })}
+                    onClick={() => !room.private && ws.updateRoomSettings(room.code, { private: true })}
                     className={room.private ? "right active" : "right"}
                   >
                     Private
@@ -320,11 +321,24 @@ const LobbyPanel = () => {
                 <div className="label">Lobby link</div>
                 <div className="link-input">
                   <span className="prefix">alttab.com/</span>
-                  <input
+                  <span className="code">{room.code}</span>
+                  <div className="clip-board">
+                    <svg onClick={copyToClip} height="24" viewBox="0 0 24 24" width="24">
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        fill={styles.blue}
+                        d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
+                      />
+                    </svg>
+                  </div>
+                  {/* <input
+                    disabled={!isLobbyOwner()}
                     value={room.code}
-                    onChange={({ target }) => ws.updateRoomSettings({ code: target.value.slice(0, 4) })}
+                    onChange={({ target }) =>
+                      isLobbyOwner() && ws.updateRoomSettings({ code: target.value.slice(0, 4) })
+                    }
                     type="text"
-                  />
+                  /> */}
                 </div>
               </div>
             </div>
