@@ -8,6 +8,7 @@ import {
   newUserJoined,
   leftRoom,
   userLeftRoom,
+  userWasKicked,
   updateChatMessages,
   setPublicRooms,
   setSocketData,
@@ -24,6 +25,12 @@ let ws
 
 // routes excluded from being tested as a room name
 const usedRoutes = ["/", "/shop", "/blog"]
+
+const systemMessage = (content) => ({
+  author: "system",
+  date: `${new Date().getHours()}:${new Date().getMinutes()}`,
+  content,
+})
 
 export default ({ children }) => {
   const { pathname } = useLocation()
@@ -66,6 +73,8 @@ export default ({ children }) => {
       room.error ? dispatch(setSocketError(room.error)) : history.push(`/${code}`)
     )
 
+  const kickUser = (user) => socket.emit("kickUser", user)
+
   const sendUserInfo = (userInfo) => socket.emit("userInfo", userInfo)
   const getPublicRooms = (message) => socket.emit("getPublicRooms", message)
   const sendMessage = (message) => socket.emit("sendMessage", message)
@@ -92,12 +101,6 @@ export default ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
-  const systemMessage = (content) => ({
-    author: "system",
-    date: `${new Date().getHours()}:${new Date().getMinutes()}`,
-    content,
-  })
-
   if (!socket) {
     socket = process.env.NODE_ENV === "development" ? io.connect("http://localhost:3001") : io.connect()
 
@@ -111,6 +114,17 @@ export default ({ children }) => {
     socket.on("userLeftRoom", (user) => {
       dispatch(userLeftRoom(user))
       dispatch(updateChatMessages(systemMessage(`${user.name} left the room !`)))
+    })
+
+    socket.on("userWasKicked", (user) => {
+      dispatch(userWasKicked(user))
+      dispatch(updateChatMessages(systemMessage(`${user.name} was kicked from the room`)))
+    })
+
+    socket.on("youHaveBeenKicked", () => {
+      dispatch(leftRoom())
+      history.push("/")
+      dispatch(setSocketError("You have been kicked from the room."))
     })
 
     socket.on("getPublicRoomsSuccess", (rooms) => dispatch(setPublicRooms(rooms)))
@@ -131,6 +145,7 @@ export default ({ children }) => {
       updateRoomSettings,
       debouncedUpdateRoomSettings,
       getRoomInfoForWelcomeJoin,
+      kickUser,
     }
   }
 

@@ -79,6 +79,8 @@ const backgroundVariantSwitch = (variant) => {
       return "#8881ab"
     case "dark":
       return "#463988"
+    case "red":
+      return "#C32A2A"
     default:
       return "#7d63ff"
   }

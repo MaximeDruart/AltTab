@@ -8,6 +8,8 @@ export const newUserJoined = (payload) => ({ type: "NEW_USER_JOINED", payload })
 
 export const userLeftRoom = (payload) => ({ type: "USER_LEFT_ROOM", payload })
 
+export const userWasKicked = (payload) => ({ type: "USER_WAS_KICKED", payload })
+
 export const leftRoom = () => ({ type: "LEFT_ROOM" })
 
 export const setPublicRooms = (payload) => ({ type: "SET_PUBLIC_ROOMS", payload })

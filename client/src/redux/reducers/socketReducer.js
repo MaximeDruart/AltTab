@@ -40,6 +40,13 @@ export default (state = initialState, { type, payload }) => {
         ...state,
         room: newRoom,
       }
+    case "USER_WAS_KICKED":
+      newRoom = state.room
+      newRoom.members = newRoom.members.filter((member) => member.id !== payload.id)
+      return {
+        ...state,
+        room: newRoom,
+      }
     case "LEFT_ROOM":
       return {
         ...state,

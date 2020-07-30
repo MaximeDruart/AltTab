@@ -138,6 +138,19 @@ io.on("connect", (socket) => {
     })
   })
 
+  socket.on("kickUser", (user) => {
+    const room = getUserRoom(user)
+
+    const kickedUserSocket = io.sockets.connected[user.id]
+
+    kickedUserSocket.leave(room.id, (err) => {
+      removeUserFromAllRooms(user)
+
+      io.to(room.id).emit("userWasKicked", user)
+      io.to(kickedUserSocket.id).emit("youHaveBeenKicked")
+    })
+  })
+
   // when user forcibly disconnects (refresh / close tab)
   socket.on("disconnect", () => {
     console.log(`user ${socket.id} disconnected`)

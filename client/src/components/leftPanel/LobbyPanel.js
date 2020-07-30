@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect, useCallback } from "react"
 import styled from "styled-components"
-import { styles, Selector } from "../../assets/defaultStyles"
+import { styles, Selector, Button } from "../../assets/defaultStyles"
 import { useSelector, useDispatch } from "react-redux"
+import { AnimatePresence, motion } from "framer-motion"
 import settingsSvg from "../../assets/icons/settings.svg"
 import profileSvg from "../../assets/icons/profile.svg"
 import crownSvg from "../../assets/icons/crown.svg"
@@ -10,8 +11,8 @@ import PerfectScrollbar from "react-perfect-scrollbar"
 import { setLeftPanelMode, setSuccessMessage } from "../../redux/actions/interfaceActions"
 import Avatar from "../Avatar"
 import ChatPanel from "./ChatPanel"
+import RangeSelector from "./RangeSelector"
 import { WebSocketContext } from "../../WebSocketContext"
-import { AnimatePresence, motion } from "framer-motion"
 
 const LobbyContainer = styled.div`
   width: 100%;
@@ -121,6 +122,7 @@ const LobbyContainer = styled.div`
       }
       .max-users,
       .rounds {
+        width: 100%;
       }
 
       .link {
@@ -159,14 +161,6 @@ const LobbyContainer = styled.div`
       margin: 20px 0;
       font-size: ${styles.txtSize.medium};
       padding: 0 20px;
-      .leave {
-        font-size: ${styles.txtSize.small};
-        padding: 8px 16px;
-        background-color: ${styles.red};
-        border: none;
-        border-radius: 7px;
-        cursor: pointer;
-      }
       .players-number {
         font-size: ${styles.txtSize.medium};
         padding: 9px 18px;
@@ -222,6 +216,31 @@ const PlayerContainer = styled(motion.li)`
       z-index: 10;
     }
 
+    .kick {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      background: ${styles.red};
+      ${styles.flexCentered};
+      border-radius: 50%;
+      z-index: 11;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease-in-out;
+      svg {
+        width: 60%;
+        height: 60%;
+      }
+    }
+    &:hover .kick {
+      opacity: 1;
+      pointer-events: all;
+    }
+
     span {
       padding-left: 75px;
       position: relative;
@@ -271,7 +290,7 @@ const LobbyPanel = () => {
               <input
                 disabled={!isLobbyOwner()}
                 value={roomName || ""}
-                //  2 steps verification for people who could remove the disabled attribute in editor :)
+                //  2 steps verification for people who could remove the disabled attribute in inspector :)
                 onChange={(e) => isLobbyOwner() && onChangeHandler(e)}
                 className="room-name-input"
                 type="text"
@@ -298,13 +317,17 @@ const LobbyPanel = () => {
                 <div className="label">Lobby privacy</div>
                 <Selector>
                   <div
-                    onClick={() => room.private && ws.updateRoomSettings(room.code, { private: false })}
+                    onClick={() =>
+                      room.private && isLobbyOwner() && ws.updateRoomSettings(room.code, { private: false })
+                    }
                     className={room.private ? "left" : "left active"}
                   >
                     Public
                   </div>
                   <div
-                    onClick={() => !room.private && ws.updateRoomSettings(room.code, { private: true })}
+                    onClick={() =>
+                      !room.private && isLobbyOwner() && ws.updateRoomSettings(room.code, { private: true })
+                    }
                     className={room.private ? "right active" : "right"}
                   >
                     Private
@@ -313,10 +336,16 @@ const LobbyPanel = () => {
               </div>
               <div className="max-users">
                 <div className="label">Max users</div>
+                <RangeSelector
+                  setValue={(value) => isLobbyOwner() && ws.updateRoomSettings(room.code, { maxMembers: value })}
+                  value={room.maxMembers}
+                  setting="users"
+                />
               </div>
-              <div className="rounds">
+              {/* <div className="rounds">
                 <div className="label">Rounds</div>
-              </div>
+                <RangeSelector setting="rounds" />
+              </div> */}
               <div className="link">
                 <div className="label">Lobby link</div>
                 <div className="link-input">
@@ -368,6 +397,17 @@ const LobbyPanel = () => {
                             <img src={crownSvg} alt="" />
                           </div>
                         )}
+                        {/* if user is lobby owner and it's not his card */}
+                        {isLobbyOwner() && member.id !== room.ownerId && (
+                          <div onClick={() => ws.kickUser(member)} className="kick">
+                            <svg width="17" height="16" viewBox="0 0 17 16">
+                              <path
+                                d="M16.1403 2.61865L10.7155 7.9743L16.0653 13.3776L13.6533 15.7896L8.29571 10.3628L2.87417 15.7145L0.482422 13.3228L5.91114 7.9469L0.557449 2.5234L2.94919 0.131656L8.32311 5.55842L13.7283 0.206683L16.1403 2.61865Z"
+                                fill={styles.txtColor1}
+                              />
+                            </svg>
+                          </div>
+                        )}
                         <span>{member.name}</span>
                       </div>
                     </PlayerContainer>
@@ -377,9 +417,9 @@ const LobbyPanel = () => {
             </ul>
           )}
           <div className="options">
-            <button onClick={() => ws.leaveRoom(room.code)} className="leave">
+            <Button size="small" variant="red" onClick={() => ws.leaveRoom(room.code)} className="leave">
               Leave
-            </button>
+            </Button>
             <div className="players-number">
               {room.members.length}/{room.maxMembers}
             </div>
