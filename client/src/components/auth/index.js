@@ -6,6 +6,7 @@ import { styles } from "../../assets/defaultStyles"
 import { useDispatch, useSelector } from "react-redux"
 import { toggleAuth } from "../../redux/actions/interfaceActions"
 import closeSvg from "../../assets/icons/close.svg"
+import googleSvg from "../../assets/icons/google.svg"
 import { motion } from "framer-motion"
 
 const AuthContainer = styled.div`
@@ -94,20 +95,32 @@ const AuthContainer = styled.div`
           color: ${styles.blue};
         }
       }
-      .other-options {
-        margin-top: 10px;
-        .login-methods {
-          margin-top: 20px;
+    }
 
-          display: flex;
-          flex-flow: row nowrap;
-          align-items: center;
-          justify-content: space-around;
-          .login-method {
-            width: 70px;
-            height: 70px;
-            border-radius: 10px;
-            background-color: ${styles.blue};
+    .other-options {
+      margin-top: 10px;
+      width: 100%;
+      .login-methods {
+        width: 100%;
+        margin-top: 20px;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: space-around;
+        .login-method {
+          width: 70px;
+          height: 70px;
+          border-radius: 10px;
+          background-color: ${styles.blue};
+          cursor: pointer;
+          .oauth-logo {
+            ${styles.flexCentered};
+            width: 100%;
+            height: 100%;
+            img {
+              width: 60%;
+              height: 60%;
+            }
           }
         }
       }
@@ -150,6 +163,19 @@ const AuthPopup = () => {
             <img src={closeSvg} alt="" />
           </div>
           {authMode === "LOGIN" ? <Login /> : <Register />}
+          <div className="other-options">
+            <div className="title">Or log in with :</div>
+            <div className="login-methods">
+              <div className="login-method">
+                <div className="oauth-logo">
+                  <img src={googleSvg} alt="" />
+                </div>
+              </div>
+              <div className="login-method"></div>
+              <div className="login-method"></div>
+              <div className="login-method"></div>
+            </div>
+          </div>
         </motion.div>
         <Filter
           initial={{ opacity: 0 }}
