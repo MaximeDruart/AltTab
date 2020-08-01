@@ -32,6 +32,7 @@
     "mongoose": "^5.9.19",
     "socket.io": "^2.3.0",
     "unique-names-generator": "^4.3.0",
+    "use-cannon": "^0.5.0",
     "uuid": "^8.2.0",
     "validator": "^13.1.1"
   }

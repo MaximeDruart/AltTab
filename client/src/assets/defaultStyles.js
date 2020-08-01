@@ -1,9 +1,8 @@
+import React from "react"
 import styled, { css } from "styled-components"
 import { motion } from "framer-motion"
 
-import React from "react"
-
-export const styles = {
+const styles = {
   txtSize: {
     XSmall: "14px",
     small: "16px",
@@ -37,6 +36,8 @@ export const styles = {
     align-items: center;
   `,
 }
+
+export { styles }
 
 export const Button = (props) => (
   <StyledButton
@@ -76,13 +77,13 @@ const StyledButton = styled(motion.button)`
 const backgroundVariantSwitch = (variant) => {
   switch (variant) {
     case "disabled":
-      return "#8881ab"
+      return styles.disabledBlue
     case "dark":
-      return "#463988"
+      return styles.darkBlue
     case "red":
-      return "#C32A2A"
+      return styles.red
     default:
-      return "#7d63ff"
+      return styles.blue
   }
 }
 
@@ -117,20 +118,20 @@ export const Selector = styled.div`
     align-items: center;
     width: 150px;
     height: 50px;
-    background-color: #1b1b26;
-    color: #bebebe;
-    border: thin solid #272732;
+    background-color: ${styles.black.medium};
+    color: ${styles.txtColor2};
+    border: thin solid ${styles.black.light};
     cursor: pointer;
     transition: all 0.15s ease-in;
     &.active {
-      background-color: #272732;
-      border: 1px solid #7d63ff;
+      background-color: ${styles.black.light};
+      border: 1px solid ${styles.blue};
       z-index: 10;
-      color: #e2e2e2;
+      color: ${styles.txtColor1};
       cursor: default;
     }
     &:hover {
-      background-color: #272732;
+      background-color: ${styles.black.light};
     }
   }
   .left {

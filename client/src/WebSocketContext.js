@@ -24,7 +24,7 @@ let socket
 let ws
 
 // routes excluded from being tested as a room name
-const usedRoutes = ["/", "/shop", "/blog"]
+const usedRoutes = ["/", "/shop", "/blog", "/gamedev"]
 
 const systemMessage = (content) => ({
   author: "system",

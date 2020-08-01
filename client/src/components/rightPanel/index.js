@@ -5,6 +5,7 @@ import Welcome from "./Welcome"
 import GameSelector from "./GameSelector"
 import Shop from "./shop"
 import Blog from "./Blog"
+import Game from "./games"
 
 const RightPanelContainer = styled.div`
   width: 100%;
@@ -24,6 +25,9 @@ const RightPanel = () => {
         {/* its wierd but it works */}
         {/* If we're on the homepage it will match with the first route and stop as we're in a switch */}
         {/* else every other route will match with the other route */}
+        <Route exact path="/gamedev">
+          <Game gameName={"test1"}></Game>
+        </Route>
         <Route exact path="/" component={Welcome}></Route>
         <Route exact path="/shop" component={Shop}></Route>
         <Route exact path="/blog" component={Blog}></Route>
